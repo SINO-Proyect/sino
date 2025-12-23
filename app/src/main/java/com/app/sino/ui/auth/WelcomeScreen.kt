@@ -41,34 +41,32 @@ fun WelcomeScreen(
     onSignUpClick: () -> Unit,
     onGoogleClick: () -> Unit
 ) {
-    SinoScreenWrapper(backgroundImageRes = R.drawable.bg1) {
+    SinoScreenWrapper(backgroundImageRes = R.drawable.bg_1) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(Dimens.PaddingLarge)
         ) {
             // Top Section
-            Spacer(modifier = Modifier.height(Dimens.PaddingGiga))
+            Spacer(modifier = Modifier.height(100.dp))
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Welcome to",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = SinoBlack,
-                    textAlign = TextAlign.Center
+                Image(
+                    painter = painterResource(id = R.drawable.sino_logo),
+                    contentDescription = "SINO Logo",
+                    modifier = Modifier.width(245.dp),
+                    contentScale = androidx.compose.ui.layout.ContentScale.FillWidth,
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(SinoWhite)
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "SINO",
-                    style = MaterialTheme.typography.displayLarge.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = Dimens.LogoSpacing,
-                        fontSize = Dimens.LogoSize
-                    ),
-                    color = SinoBlack,
-                    textAlign = TextAlign.Center
+                    text = "Your academic journey",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = SinoWhite.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
@@ -96,7 +94,7 @@ fun WelcomeScreen(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp // Keeping this one-off or could move to Dimens
                     ),
-                    color = SinoBlack.copy(alpha = 0.6f)
+                    color = SinoWhite.copy(alpha = 0.6f)
                 )
 
                 Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
@@ -106,8 +104,8 @@ fun WelcomeScreen(
                     text = "Create Account",
                     onClick = onSignUpClick,
                     isOutlined = true,
-                    contentColor = SinoBlack,
-                    borderColor = SinoBlack
+                    contentColor = SinoWhite,
+                    borderColor = SinoWhite
                 )
                 
                 // Reduced spacing for Google button
@@ -118,8 +116,7 @@ fun WelcomeScreen(
                     onClick = onGoogleClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(Dimens.ButtonHeight)
-                        .border(1.dp, Color.LightGray, RoundedCornerShape(Dimens.ButtonCornerRadius)),
+                        .height(Dimens.ButtonHeight),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = SinoWhite,
                         contentColor = SinoBlack
