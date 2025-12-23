@@ -27,7 +27,8 @@ fun SinoButton(
     isOutlined: Boolean = false,
     containerColor: Color = SinoBlack,
     contentColor: Color = SinoWhite,
-    borderColor: Color = SinoBlack
+    borderColor: Color = SinoBlack,
+    enabled: Boolean = true
 ) {
     if (isOutlined) {
         OutlinedButton(
@@ -35,10 +36,12 @@ fun SinoButton(
             modifier = modifier
                 .fillMaxWidth()
                 .height(Dimens.ButtonHeight),
+            enabled = enabled,
             colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = contentColor
+                contentColor = contentColor,
+                disabledContentColor = Color.Gray
             ),
-            border = BorderStroke(1.dp, borderColor),
+            border = if (enabled) BorderStroke(1.dp, borderColor) else BorderStroke(1.dp, Color.LightGray),
             shape = RoundedCornerShape(Dimens.ButtonCornerRadius)
         ) {
             Text(
@@ -53,9 +56,12 @@ fun SinoButton(
             modifier = modifier
                 .fillMaxWidth()
                 .height(Dimens.ButtonHeight),
+            enabled = enabled,
             colors = ButtonDefaults.buttonColors(
                 containerColor = containerColor,
-                contentColor = contentColor
+                contentColor = contentColor,
+                disabledContainerColor = Color.LightGray,
+                disabledContentColor = Color.DarkGray
             ),
             elevation = ButtonDefaults.buttonElevation(0.dp),
             shape = RoundedCornerShape(Dimens.ButtonCornerRadius)

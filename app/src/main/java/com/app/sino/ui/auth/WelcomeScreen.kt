@@ -54,7 +54,7 @@ fun WelcomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Bienvenido a",
+                    text = "Welcome to",
                     style = MaterialTheme.typography.headlineSmall,
                     color = SinoBlack,
                     textAlign = TextAlign.Center
@@ -81,7 +81,7 @@ fun WelcomeScreen(
             ) {
                 // Log In Button (Black Filled)
                 SinoButton(
-                    text = "Iniciar Sesión",
+                    text = "Log In",
                     onClick = onLoginClick,
                     containerColor = SinoBlack,
                     contentColor = SinoWhite
@@ -91,7 +91,7 @@ fun WelcomeScreen(
 
                 // Or Label
                 Text(
-                    text = "o",
+                    text = "or",
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp // Keeping this one-off or could move to Dimens
@@ -103,7 +103,7 @@ fun WelcomeScreen(
 
                 // Create Account Button (Outlined)
                 SinoButton(
-                    text = "Crear Cuenta",
+                    text = "Create Account",
                     onClick = onSignUpClick,
                     isOutlined = true,
                     contentColor = SinoBlack,
@@ -139,7 +139,7 @@ fun WelcomeScreen(
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = "Continuar con Google",
+                            text = "Continue with Google",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )

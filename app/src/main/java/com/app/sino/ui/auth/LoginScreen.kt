@@ -10,23 +10,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.sino.R
+import com.app.sino.data.util.Resource
 import com.app.sino.ui.components.SinoBottomCard
 import com.app.sino.ui.components.SinoButton
 import com.app.sino.ui.components.SinoScreenWrapper
@@ -39,88 +48,128 @@ import com.app.sino.ui.theme.SinoWhite
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    SinoScreenWrapper(backgroundImageRes = R.drawable.bg2) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Top Section (Header)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Dimens.HeaderTopPadding, bottom = Dimens.HeaderBottomPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Iniciar Sesión",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = SinoBlack
-                )
+    val authState = viewModel.authState.collectAsState().value
+    val loginFormState by viewModel.loginFormState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.validationEvent.collect { event ->
+            when (event) {
+                is AuthViewModel.ValidationEvent.Success -> {
+                    onLoginSuccess()
+                }
+                is AuthViewModel.ValidationEvent.Error -> {
+                    snackbarHostState.showSnackbar(event.message)
+                }
             }
+        }
+    }
 
-            // Bottom Section (Container)
-            SinoBottomCard(
-                modifier = Modifier.weight(1f)
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = Color.Transparent
+    ) { paddingValues ->
+        SinoScreenWrapper(backgroundImageRes = R.drawable.bg3) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
             ) {
-                Column(
+                // Top Section (Header)
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = Dimens.PaddingExtraLarge, vertical = Dimens.PaddingHuge),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth()
+                        .padding(top = Dimens.HeaderTopPadding, bottom = Dimens.HeaderBottomPadding),
+                    contentAlignment = Alignment.Center
                 ) {
-                    
-                    // Email Field
-                    SinoTextField(
-                        label = "Correo electrónico",
-                        value = email,
-                        onValueChange = { email = it },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        placeholder = "ejemplo@correo.com"
+                    Text(
+                        text = "Log In",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = SinoBlack
                     )
+                }
 
-                    Spacer(modifier = Modifier.height(20.dp)) // Keeping this specific spacing for visual balance
-
-                    // Password Field
-                    SinoTextField(
-                        label = "Contraseña",
-                        value = password,
-                        onValueChange = { password = it },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = Icons.Default.Face,
-                        onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
-                        placeholder = "••••••••"
-                    )
-
-                    Spacer(modifier = Modifier.height(Dimens.PaddingSmall))
-
-                    TextButton(
-                        onClick = onForgotPasswordClick,
-                        modifier = Modifier.align(Alignment.End)
+                // Bottom Section (Container)
+                SinoBottomCard(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = Dimens.PaddingExtraLarge, vertical = Dimens.PaddingHuge),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = "¿Olvidaste tu contraseña?",
-                            color = SinoWhite.copy(alpha = 0.7f),
-                            fontWeight = FontWeight.SemiBold
+                        
+                        // Email Field
+                        SinoTextField(
+                            label = "Email Address",
+                            value = email,
+                            onValueChange = { 
+                                email = it
+                                viewModel.clearLoginErrors()
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            placeholder = "example@email.com",
+                            isError = loginFormState.emailError != null,
+                            errorMessage = loginFormState.emailError
                         )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Password Field
+                        SinoTextField(
+                            label = "Password",
+                            value = password,
+                            onValueChange = { 
+                                password = it
+                                viewModel.clearLoginErrors()
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = Icons.Default.Face,
+                            onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
+                            placeholder = "••••••••",
+                            isError = loginFormState.passwordError != null,
+                            errorMessage = loginFormState.passwordError
+                        )
+
+                        Spacer(modifier = Modifier.height(Dimens.PaddingSmall))
+
+                        TextButton(
+                            onClick = onForgotPasswordClick,
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text(
+                                text = "Forgot your password?",
+                                color = SinoWhite.copy(alpha = 0.7f),
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        if (authState is Resource.Loading) {
+                            CircularProgressIndicator(color = SinoWhite)
+                        } else {
+                            SinoButton(
+                                text = "Log In",
+                                onClick = { viewModel.login(email, password) },
+                                containerColor = SinoWhite,
+                                contentColor = SinoBlack,
+                                enabled = true
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(Dimens.PaddingExtraLarge)) 
                     }
-
-                    Spacer(modifier = Modifier.weight(1f)) // Push button to bottom
-
-                    SinoButton(
-                        text = "Entrar",
-                        onClick = onLoginSuccess,
-                        containerColor = SinoWhite,
-                        contentColor = SinoBlack
-                    )
-                    
-                    Spacer(modifier = Modifier.height(Dimens.PaddingExtraLarge)) 
                 }
             }
         }
