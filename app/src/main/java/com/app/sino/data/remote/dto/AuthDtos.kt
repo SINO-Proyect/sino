@@ -22,6 +22,10 @@ data class RefreshTokenRequest(
     @SerializedName("refresh_token") val refreshToken: String
 )
 
+data class VerificationRequest(
+    @SerializedName("idToken") val idToken: String
+)
+
 data class AuthResponse(
     @SerializedName("success") val success: Boolean,
     @SerializedName("message") val message: String,
@@ -34,5 +38,6 @@ data class AuthData(
     @SerializedName("email") val email: String?,
     @SerializedName("refreshToken") val refreshToken: String?,
     @SerializedName("expiresIn") val expiresIn: String?,
-    @SerializedName("localId") val localId: String?
+    @SerializedName("localId") val localId: String?,
+    @SerializedName("emailVerified") val emailVerified: Boolean?
 )

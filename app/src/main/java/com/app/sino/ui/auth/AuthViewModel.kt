@@ -11,6 +11,7 @@ import com.app.sino.data.remote.dto.RegisterRequest
 import com.app.sino.data.repository.AuthRepository
 import com.app.sino.data.util.Resource
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -38,8 +39,39 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val _validationEvent = Channel<ValidationEvent>()
     val validationEvent = _validationEvent.receiveAsFlow()
 
+    private val _infoMessage = Channel<String>()
+    val infoMessage = _infoMessage.receiveAsFlow()
+
+    private val _resendCooldown = MutableStateFlow(0)
+    val resendCooldown = _resendCooldown.asStateFlow()
+
     init {
         checkAuth()
+    }
+
+    fun startResendCooldown() {
+        if (_resendCooldown.value > 0) return
+        viewModelScope.launch {
+            _resendCooldown.value = 60
+            while (_resendCooldown.value > 0) {
+                delay(1000)
+                _resendCooldown.value--
+            }
+        }
+    }
+
+    fun setInfoMessage(message: String) {
+        viewModelScope.launch {
+            _infoMessage.send(message)
+        }
+    }
+
+    fun getUserEmail(): String? {
+        return repository.getEmail()
+    }
+
+    fun isEmailVerified(): Boolean {
+        return repository.isEmailVerified()
     }
 
     private fun checkAuth() {
@@ -47,12 +79,14 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             repository.checkAuth().collect { isAuthenticated ->
                 if (isAuthenticated) {
                     _authState.value = Resource.Success(Unit)
+                } else {
+                    _authState.value = Resource.Error("Unauthenticated")
                 }
             }
         }
     }
 
-    // Called when user types to clear errors (optional, good UX)
+
     fun clearLoginErrors() {
         _loginFormState.value = LoginFormState()
     }
@@ -65,6 +99,18 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         _forgotPasswordFormState.value = ForgotPasswordState()
     }
 
+    fun isLoginValid(email: String, password: String): Boolean {
+        return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length >= 6
+    }
+
+    fun isRegisterValid(email: String, password: String, confirm: String, name: String): Boolean {
+        return email.isNotBlank() && 
+               Patterns.EMAIL_ADDRESS.matcher(email).matches() && 
+               password.length >= 6 && 
+               password == confirm && 
+               name.isNotBlank()
+    }
+
     fun login(email: String, password: String) {
         val emailError = if (email.isBlank()) "Please enter your email address." else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) "Please enter a valid email address." else null
         val passwordError = if (password.isBlank()) "Please enter your password." else null
@@ -74,7 +120,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        // Clear errors before API call
+
         _loginFormState.value = LoginFormState()
 
         viewModelScope.launch {
@@ -133,6 +179,10 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun isRecoverValid(email: String): Boolean {
+        return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
     fun recoverPassword(email: String) {
          val emailError = if (email.isBlank()) "Please enter your email address." else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) "Please enter a valid email address." else null
          
@@ -157,7 +207,24 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     fun logout() {
         viewModelScope.launch {
             repository.logout().collect {
-                _authState.value = null // Reset state
+
+            }
+        }
+    }
+
+    fun sendVerificationEmail() {
+        viewModelScope.launch {
+            repository.sendVerificationEmail().collect { result ->
+                if (result is Resource.Success) {
+                    _validationEvent.send(ValidationEvent.Success)
+                    startResendCooldown()
+                } else if (result is Resource.Error) {
+                    // If rate limited (429), also start cooldown to prevent further spam
+                    if (result.message?.contains("Too many requests") == true) {
+                        startResendCooldown()
+                    }
+                    _validationEvent.send(ValidationEvent.Error(result.message ?: "Error sending email"))
+                }
             }
         }
     }

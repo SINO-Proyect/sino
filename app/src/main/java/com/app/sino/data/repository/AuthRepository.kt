@@ -39,6 +39,8 @@ class AuthRepository(
                 if (body.success && body.data != null) {
                     body.data.idToken?.let { tokenManager.saveToken(it) }
                     body.data.refreshToken?.let { tokenManager.saveRefreshToken(it) }
+                    body.data.email?.let { tokenManager.saveEmail(it) }
+                    body.data.emailVerified?.let { tokenManager.saveEmailVerified(it) }
                 }
                 emit(Resource.Success(body))
             } else {
@@ -72,7 +74,7 @@ class AuthRepository(
             try {
                 api.logout("Bearer $token")
             } catch (e: Exception) {
-                // Ignore logout errors on server, just clear local
+
             }
         }
         tokenManager.clearTokens()
@@ -82,10 +84,49 @@ class AuthRepository(
     fun checkAuth(): Flow<Boolean> = flow {
         val token = tokenManager.getToken()
         if (token != null) {
-            emit(true) 
-            // Ideally we call verifyToken here, but for speed we assume token is valid or interceptor handles 401
+            try {
+                val response = api.verifyToken("Bearer $token")
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val data = response.body()?.data
+                    data?.emailVerified?.let { tokenManager.saveEmailVerified(it) }
+                    data?.email?.let { tokenManager.saveEmail(it) }
+                    emit(true)
+                } else {
+                    emit(false) 
+                }
+            } catch (e: Exception) {
+
+                emit(true)
+            }
         } else {
             emit(false)
+        }
+    }
+
+    fun getEmail(): String? {
+        return tokenManager.getEmail()
+    }
+
+    fun isEmailVerified(): Boolean {
+        return tokenManager.isEmailVerified()
+    }
+
+    fun sendVerificationEmail(): Flow<Resource<AuthResponse>> = flow {
+        emit(Resource.Loading())
+        val token = tokenManager.getToken()
+        if (token == null) {
+            emit(Resource.Error("Not logged in"))
+            return@flow
+        }
+        try {
+            val response = api.sendVerificationEmail(VerificationRequest(token))
+            if (response.isSuccessful && response.body() != null) {
+                emit(Resource.Success(response.body()!!))
+            } else {
+                emit(Resource.Error(response.message() ?: "Failed to send email"))
+            }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Error"))
         }
     }
 }

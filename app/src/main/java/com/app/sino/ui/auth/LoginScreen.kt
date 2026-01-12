@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
@@ -28,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,6 +46,7 @@ import com.app.sino.ui.components.SinoTextField
 import com.app.sino.ui.theme.Dimens
 import com.app.sino.ui.theme.SinoBlack
 import com.app.sino.ui.theme.SinoWhite
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
@@ -59,6 +63,8 @@ fun LoginScreen(
     val loginFormState by viewModel.loginFormState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    var apiError by remember { mutableStateOf<String?>(null) }
+
     LaunchedEffect(key1 = true) {
         viewModel.validationEvent.collect { event ->
             when (event) {
@@ -66,9 +72,23 @@ fun LoginScreen(
                     onLoginSuccess()
                 }
                 is AuthViewModel.ValidationEvent.Error -> {
-                    snackbarHostState.showSnackbar(event.message)
+
+                    apiError = event.message
                 }
             }
+        }
+    }
+    
+
+    LaunchedEffect(email, password) {
+        if (apiError != null) apiError = null
+    }
+    
+
+    LaunchedEffect(apiError) {
+        if (apiError != null) {
+            delay(5000)
+            apiError = null
         }
     }
 
@@ -82,7 +102,7 @@ fun LoginScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Top Section (Header)
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -90,14 +110,14 @@ fun LoginScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Log In",
+                        text = "Welcome Back",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = SinoBlack
                     )
                 }
 
-                // Bottom Section (Container)
+
                 SinoBottomCard(
                     modifier = Modifier.weight(1f)
                 ) {
@@ -108,7 +128,7 @@ fun LoginScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         
-                        // Email Field
+
                         SinoTextField(
                             label = "Email Address",
                             value = email,
@@ -116,7 +136,10 @@ fun LoginScreen(
                                 email = it
                                 viewModel.clearLoginErrors()
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Email,
+                                imeAction = ImeAction.Next
+                            ),
                             placeholder = "example@email.com",
                             isError = loginFormState.emailError != null,
                             errorMessage = loginFormState.emailError
@@ -124,7 +147,7 @@ fun LoginScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Password Field
+
                         SinoTextField(
                             label = "Password",
                             value = password,
@@ -132,9 +155,15 @@ fun LoginScreen(
                                 password = it
                                 viewModel.clearLoginErrors()
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = { viewModel.login(email, password) }
+                            ),
                             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            trailingIcon = Icons.Default.Face,
+                            trailingIconRes = if (isPasswordVisible) R.drawable.eye_bold else R.drawable.eye_closed_bold,
                             onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
                             placeholder = "••••••••",
                             isError = loginFormState.passwordError != null,
@@ -155,16 +184,39 @@ fun LoginScreen(
                         }
 
                         Spacer(modifier = Modifier.weight(1f))
+                        
+
+                        if (apiError != null) {
+                            Text(
+                                text = apiError!!,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        val isLoginEnabled = viewModel.isLoginValid(email, password)
 
                         if (authState is Resource.Loading) {
-                            CircularProgressIndicator(color = SinoWhite)
+    
+                            SinoButton(
+                                text = "Logging in...",
+                                onClick = { },
+                                containerColor = SinoWhite,
+                                contentColor = SinoBlack,
+                                enabled = false
+                            )
                         } else {
                             SinoButton(
                                 text = "Log In",
                                 onClick = { viewModel.login(email, password) },
-                                containerColor = SinoWhite,
-                                contentColor = SinoBlack,
-                                enabled = true
+                                containerColor = if (isLoginEnabled) SinoWhite else Color.DarkGray.copy(alpha = 0.15f),
+                                contentColor = if (isLoginEnabled) SinoBlack else Color.Gray.copy(alpha = 0.5f),
+                                enabled = isLoginEnabled
                             )
                         }
                         

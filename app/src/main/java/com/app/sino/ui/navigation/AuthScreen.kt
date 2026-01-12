@@ -5,4 +5,5 @@ sealed class AuthScreen(val route: String) {
     data object Login : AuthScreen("login")
     data object SignUp : AuthScreen("signup")
     data object ForgotPassword : AuthScreen("forgot_password")
+    data object VerifyEmail : AuthScreen("verify_email")
 }

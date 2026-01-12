@@ -2,6 +2,7 @@ package com.app.sino.ui
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,6 +24,8 @@ import com.app.sino.ui.auth.LoginScreen
 import com.app.sino.ui.auth.SignUpScreen
 import com.app.sino.ui.auth.WelcomeScreen
 import com.app.sino.ui.navigation.AuthScreen
+import com.app.sino.ui.theme.SinoBlack
+import com.app.sino.ui.theme.SinoWhite
 
 @Composable
 fun RootScreen(
@@ -31,12 +34,23 @@ fun RootScreen(
     val navController = rememberNavController()
     val authState = viewModel.authState.collectAsState().value
 
-    if (authState is Resource.Loading && authState.data == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+
+    if (authState == null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SinoBlack),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = SinoWhite)
         }
     } else {
-        val startDestination = if (authState is Resource.Success) "main_graph" else "auth_graph"
+
+        val startDestination = if (authState is Resource.Success) {
+            if (viewModel.isEmailVerified()) "main_graph" else AuthScreen.VerifyEmail.route
+        } else {
+            "auth_graph"
+        }
         
         NavHost(
             navController = navController,
@@ -55,28 +69,37 @@ fun RootScreen(
                         onLoginClick = { navController.navigate(AuthScreen.Login.route) },
                         onSignUpClick = { navController.navigate(AuthScreen.SignUp.route) },
                         onGoogleClick = { 
-                           // Google sign in placeholder
+
                         }
                     )
                 }
                 composable(AuthScreen.Login.route) {
                     LoginScreen(
                         onLoginSuccess = {
-                            navController.navigate("main_graph") {
-                                popUpTo("auth_graph") { inclusive = true }
+                            if (viewModel.isEmailVerified()) {
+                                navController.navigate("main_graph") {
+                                    popUpTo("auth_graph") { inclusive = true }
+                                }
+                            } else {
+                                navController.navigate(AuthScreen.VerifyEmail.route) {
+                                    popUpTo("auth_graph") { inclusive = true }
+                                }
                             }
                         },
                         onForgotPasswordClick = { navController.navigate(AuthScreen.ForgotPassword.route) },
-                        onBackClick = { navController.popBackStack() }
+                        onBackClick = { navController.popBackStack() },
+                        viewModel = viewModel
                     )
                 }
                 composable(AuthScreen.SignUp.route) {
                     SignUpScreen(
                         onSignUpSuccess = {
-                            navController.navigate("main_graph") {
-                                popUpTo("auth_graph") { inclusive = true }
+                            viewModel.setInfoMessage("Account created! Please check your email and log in.")
+                            navController.navigate(AuthScreen.Login.route) {
+                                popUpTo(AuthScreen.Welcome.route) { inclusive = false }
                             }
-                        }
+                        },
+                        viewModel = viewModel
                     )
                 }
                 composable(AuthScreen.ForgotPassword.route) {
@@ -85,9 +108,22 @@ fun RootScreen(
                             navController.navigate(AuthScreen.Login.route) {
                                 popUpTo(AuthScreen.Login.route) { inclusive = true }
                             }
-                        }
+                        },
+                        viewModel = viewModel
                     )
                 }
+            }
+
+            composable(AuthScreen.VerifyEmail.route) {
+                com.app.sino.ui.auth.VerifyEmailScreen(
+                    onContinueClick = {
+                        viewModel.logout()
+                        navController.navigate(AuthScreen.Login.route) {
+                            popUpTo("auth_graph") { inclusive = true }
+                        }
+                    },
+                    viewModel = viewModel
+                )
             }
 
             composable("main_graph") {

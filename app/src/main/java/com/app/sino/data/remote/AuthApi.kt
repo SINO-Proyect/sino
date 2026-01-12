@@ -21,6 +21,9 @@ interface AuthApi {
     @POST("refresh-token")
     suspend fun refreshToken(@Body request: RefreshTokenRequest): Response<AuthResponse>
 
+    @POST("send-verification")
+    suspend fun sendVerificationEmail(@Body request: VerificationRequest): Response<AuthResponse>
+
     @GET("verify")
     suspend fun verifyToken(@Header("Authorization") token: String): Response<AuthResponse>
 

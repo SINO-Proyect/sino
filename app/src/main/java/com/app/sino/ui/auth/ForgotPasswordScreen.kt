@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -81,7 +83,7 @@ fun ForgotPasswordScreen(
                         text = "Reset Password",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = SinoWhite // White for contrast on dark bg
+                        color = SinoBlack 
                     )
                 }
 
@@ -98,8 +100,8 @@ fun ForgotPasswordScreen(
                         
                         Text(
                             text = "Enter your email address below and we'll send you instructions.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = SinoBlack.copy(alpha = 0.7f),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = SinoWhite.copy(alpha = 0.9f),
                             textAlign = TextAlign.Center
                         )
                         
@@ -113,20 +115,30 @@ fun ForgotPasswordScreen(
                                 email = it
                                 viewModel.clearForgotPasswordErrors()
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Email,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = { viewModel.recoverPassword(email) }
+                            ),
                             placeholder = "example@email.com",
                             isError = forgotPasswordFormState.emailError != null,
                             errorMessage = forgotPasswordFormState.emailError
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        val isEnabled = viewModel.isRecoverValid(email)
 
                         SinoButton(
                             text = "Send Instructions",
                             onClick = { viewModel.recoverPassword(email) },
-                            containerColor = SinoWhite,
-                            contentColor = SinoBlack,
-                            enabled = true
+                            containerColor = if (isEnabled) SinoWhite else Color.DarkGray.copy(alpha = 0.15f),
+                            contentColor = if (isEnabled) SinoBlack else Color.Gray.copy(alpha = 0.5f),
+                            enabled = isEnabled
                         )
                         
                         Spacer(modifier = Modifier.height(Dimens.PaddingExtraLarge))

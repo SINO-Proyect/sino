@@ -34,6 +34,22 @@ class TokenManager(context: Context) {
         return sharedPreferences.getString("refresh_token", null)
     }
 
+    fun saveEmail(email: String) {
+        sharedPreferences.edit().putString("user_email", email).apply()
+    }
+
+    fun getEmail(): String? {
+        return sharedPreferences.getString("user_email", null)
+    }
+
+    fun saveEmailVerified(isVerified: Boolean) {
+        sharedPreferences.edit().putBoolean("email_verified", isVerified).apply()
+    }
+
+    fun isEmailVerified(): Boolean {
+        return sharedPreferences.getBoolean("email_verified", false)
+    }
+
     fun clearTokens() {
         sharedPreferences.edit().clear().apply()
     }
