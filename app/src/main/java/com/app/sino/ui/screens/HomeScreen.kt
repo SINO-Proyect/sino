@@ -15,8 +15,8 @@ fun HomeScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Home Screen",
-            style = MaterialTheme.typography.headlineMedium
+            text = "Welcome to SINO",
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }
