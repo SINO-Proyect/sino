@@ -16,7 +16,7 @@ import com.app.sino.ui.screens.PathScreen
 import com.app.sino.ui.screens.ProfileScreen
 
 @Composable
-fun MainScreen() {
+fun MainScreen(onLogout: () -> Unit) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -31,7 +31,7 @@ fun MainScreen() {
             composable(Screen.Path.route) { PathScreen() }
             composable(Screen.Courses.route) { CoursesScreen() }
             composable(Screen.Calendar.route) { CalendarScreen() }
-            composable(Screen.Profile.route) { ProfileScreen() }
+            composable(Screen.Profile.route) { ProfileScreen(onLogout = onLogout) }
         }
     }
 }

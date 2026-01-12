@@ -4,7 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.app.sino.ui.MainScreen
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.app.sino.ui.RootScreen
 import com.app.sino.ui.theme.SINOTheme
 
 class MainActivity : ComponentActivity() {
@@ -12,8 +13,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SINOTheme(darkTheme = true) {
-                MainScreen()
+            val systemDark = isSystemInDarkTheme()
+            SINOTheme(darkTheme = systemDark) {
+                RootScreen()
             }
         }
     }

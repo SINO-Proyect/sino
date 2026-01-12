@@ -2,6 +2,18 @@ package com.app.sino.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val SinoBlack = Color(0xFF000000)
+val SinoWhite = Color(0xFFFFFFFF)
+val SinoDarkGrey = Color(0xFF1A1A1A)
+val SinoMediumGrey = Color(0xFF434343)
+val SinoLightGrey = Color(0xFFD3D3D3)
+
+// Gradients
+val GradientDarkStart = Color(0xFF434343)
+val GradientDarkEnd = Color(0xFF1C1C1C)
+val GradientBlackStart = Color(0xFF1A1A1A)
+val GradientBlackEnd = Color(0xFF000000)
+
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
