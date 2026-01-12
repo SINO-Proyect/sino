@@ -87,7 +87,7 @@ fun SignUpScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Color.Transparent
     ) { paddingValues ->
-        SinoScreenWrapper(backgroundImageRes = R.drawable.bg4) {
+        SinoScreenWrapper(backgroundImageRes = R.drawable.bg3) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()

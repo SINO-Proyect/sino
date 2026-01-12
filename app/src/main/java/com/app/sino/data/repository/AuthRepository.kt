@@ -92,10 +92,26 @@ class AuthRepository(
                     data?.email?.let { tokenManager.saveEmail(it) }
                     emit(true)
                 } else {
-                    emit(false) 
+                    // If the account was deleted or token expired (401, 404)
+                    if (response.code() == 401 || response.code() == 404) {
+                        tokenManager.clearTokens()
+                        emit(false)
+                    } else {
+                        // For other errors (500, etc), we might want to allow offline access
+                        emit(true)
+                    }
+                }
+            } catch (e: HttpException) {
+                if (e.code() == 401 || e.code() == 404) {
+                    tokenManager.clearTokens()
+                    emit(false)
+                } else {
+                    // Other server errors, maybe keep session or retry?
+                    // For robustness, if it's not 401/404, we assume offline/temp issue
+                    emit(true)
                 }
             } catch (e: Exception) {
-
+                // Network error or other issues, allow offline access
                 emit(true)
             }
         } else {

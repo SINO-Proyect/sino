@@ -47,7 +47,7 @@ fun RootScreen(
     } else {
 
         val startDestination = if (authState is Resource.Success) {
-            if (viewModel.isEmailVerified()) "main_graph" else AuthScreen.VerifyEmail.route
+            "main_graph" // Bypass email verification check
         } else {
             "auth_graph"
         }
@@ -76,14 +76,8 @@ fun RootScreen(
                 composable(AuthScreen.Login.route) {
                     LoginScreen(
                         onLoginSuccess = {
-                            if (viewModel.isEmailVerified()) {
-                                navController.navigate("main_graph") {
-                                    popUpTo("auth_graph") { inclusive = true }
-                                }
-                            } else {
-                                navController.navigate(AuthScreen.VerifyEmail.route) {
-                                    popUpTo("auth_graph") { inclusive = true }
-                                }
+                            navController.navigate("main_graph") {
+                                popUpTo("auth_graph") { inclusive = true }
                             }
                         },
                         onForgotPasswordClick = { navController.navigate(AuthScreen.ForgotPassword.route) },
@@ -94,7 +88,7 @@ fun RootScreen(
                 composable(AuthScreen.SignUp.route) {
                     SignUpScreen(
                         onSignUpSuccess = {
-                            viewModel.setInfoMessage("Account created! Please check your email and log in.")
+                            viewModel.setInfoMessage("Account created! You can now log in.")
                             navController.navigate(AuthScreen.Login.route) {
                                 popUpTo(AuthScreen.Welcome.route) { inclusive = false }
                             }
