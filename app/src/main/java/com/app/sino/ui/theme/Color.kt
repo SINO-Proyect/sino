@@ -2,9 +2,10 @@ package com.app.sino.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val SinoBlack = Color(0xFF000000)
+val SinoBlack = Color(0xFF050505) // Ultra dark for footer/headers
+val SinoBackground = Color(0xFF0D0D0D) // Deep gray for general background
 val SinoWhite = Color(0xFFFFFFFF)
-val SinoDarkGrey = Color(0xFF1A1A1A)
+val SinoDarkGrey = Color(0xFF131313)
 val SinoMediumGrey = Color(0xFF434343)
 val SinoLightGrey = Color(0xFFD3D3D3)
 

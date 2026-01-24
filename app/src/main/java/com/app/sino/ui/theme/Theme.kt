@@ -12,32 +12,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = SinoWhite,
+    onPrimary = SinoBlack,
+    secondary = SinoMediumGrey,
+    onSecondary = SinoWhite,
+    tertiary = SinoLightGrey,
+    background = SinoBackground,
+    onBackground = SinoWhite,
+    surface = SinoBlack,
+    onSurface = SinoWhite,
+    onSurfaceVariant = SinoLightGrey
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-
+    primary = SinoBlack,
+    onPrimary = SinoWhite,
+    secondary = SinoMediumGrey,
+    onSecondary = SinoWhite,
+    tertiary = SinoLightGrey,
+    background = SinoWhite,
+    onBackground = SinoBlack,
+    surface = SinoWhite,
+    onSurface = SinoBlack,
+    onSurfaceVariant = SinoMediumGrey
 )
 
 @Composable
 fun SINOTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Disabled for strictly B&W
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
+        // dynamicColor check removed to force our theme
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
