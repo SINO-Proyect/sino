@@ -36,4 +36,17 @@ interface StudyPlanApi {
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 100
     ): Response<ApiResponse<PageResponse<UniversityDto>>>
+
+    @GET("api/universities")
+    suspend fun searchUniversities(
+        @Query("name") name: String,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 100
+    ): Response<ApiResponse<PageResponse<UniversityDto>>>
+
+    @POST("api/universities")
+    suspend fun createUniversity(@Body university: UniversityDto): Response<ApiResponse<UniversityDto>>
+
+    @PUT("api/courses/{id}")
+    suspend fun updateCourse(@Path("id") id: Int, @Body course: CourseDto): Response<ApiResponse<CourseDto>>
 }

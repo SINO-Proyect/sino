@@ -29,6 +29,9 @@ class CoursesViewModel(application: Application) : AndroidViewModel(application)
     private val _selectedPlanCourses = MutableStateFlow<List<CourseDto>>(emptyList())
     val selectedPlanCourses: StateFlow<List<CourseDto>> = _selectedPlanCourses.asStateFlow()
 
+    private val _courseUpdateState = MutableStateFlow<Resource<Boolean>?>(null)
+    val courseUpdateState: StateFlow<Resource<Boolean>?> = _courseUpdateState.asStateFlow()
+
     init {
         loadStudyPlans()
     }
@@ -57,5 +60,28 @@ class CoursesViewModel(application: Application) : AndroidViewModel(application)
                 else -> {}
             }
         }
+    }
+
+    fun updateCourse(course: CourseDto) {
+        viewModelScope.launch {
+            _courseUpdateState.value = Resource.Loading()
+            when (val result = repository.updateCourse(course)) {
+                is Resource.Success -> {
+                    // Update local list
+                    _selectedPlanCourses.value = _selectedPlanCourses.value.map { 
+                        if (it.idCourse == course.idCourse) result.data!! else it 
+                    }
+                    _courseUpdateState.value = Resource.Success(true)
+                }
+                is Resource.Error -> {
+                    _courseUpdateState.value = Resource.Error(result.message ?: "Error updating course")
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun resetUpdateState() {
+        _courseUpdateState.value = null
     }
 }

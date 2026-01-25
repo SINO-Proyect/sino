@@ -106,4 +106,44 @@ class StudyPlanRepository(private val tokenManager: TokenManager? = null) {
                ))
         }
     }
+
+    suspend fun searchUniversities(name: String): Resource<List<UniversityDto>> {
+        return try {
+            val response = api.searchUniversities(name)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Resource.Success(response.body()!!.data?.content ?: emptyList())
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error searching universities")
+        }
+    }
+
+    suspend fun createUniversity(name: String, country: String): Resource<UniversityDto> {
+        return try {
+            val dto = UniversityDto(idUniversity = 0, dscName = name, dscCountry = country, status = true)
+            val response = api.createUniversity(dto)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Resource.Success(response.body()!!.data!!)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error creating university")
+        }
+    }
+
+    suspend fun updateCourse(course: CourseDto): Resource<CourseDto> {
+        return try {
+            val response = api.updateCourse(course.idCourse ?: return Resource.Error("Course ID is missing"), course)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Resource.Success(response.body()!!.data!!)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error updating course")
+        }
+    }
 }

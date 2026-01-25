@@ -69,9 +69,41 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
                 is Resource.Success -> {
                     val unis = result.data ?: emptyList()
                     _universities.value = unis
-                    if (selectedUniversityId.value == null && unis.isNotEmpty()) {
-                        selectedUniversityId.value = unis.first().idUniversity
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun searchUniversities(query: String) {
+        viewModelScope.launch {
+            if (query.isBlank()) {
+                loadUniversities()
+                return@launch
+            }
+            when(val result = repository.searchUniversities(query)) {
+                is Resource.Success -> {
+                    _universities.value = result.data ?: emptyList()
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun createAndSelectUniversity(name: String, country: String = "Costa Rica") {
+        viewModelScope.launch {
+            _uiState.value = AddPlanUiState.Loading("Creando Universidad...")
+            when(val result = repository.createUniversity(name, country)) {
+                is Resource.Success -> {
+                    val newUni = result.data!!
+                    _universities.update { current ->
+                        current + newUni
                     }
+                    selectedUniversityId.value = newUni.idUniversity
+                    _uiState.value = AddPlanUiState.Success("Universidad creada")
+                }
+                is Resource.Error -> {
+                    _uiState.value = AddPlanUiState.Error(result.message ?: "Error al crear universidad")
                 }
                 else -> {}
             }
@@ -167,12 +199,47 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
 
     }
 
-    fun savePlan() {
-        val uniId = selectedUniversityId.value
-        if (uniId == null) {
-            _uiState.value = AddPlanUiState.Error("Selecciona una universidad")
-            return
+    fun validateGeneralInfo(): Boolean {
+        if (selectedUniversityId.value == null) {
+            _uiState.value = AddPlanUiState.Error("Debes seleccionar una universidad")
+            return false
         }
+        if (planName.value.isBlank()) {
+            _uiState.value = AddPlanUiState.Error("El nombre del plan es requerido")
+            return false
+        }
+        if (planName.value.length > 200) {
+            _uiState.value = AddPlanUiState.Error("El nombre del plan es muy largo (máx 200)")
+            return false
+        }
+        if (careerName.value.isBlank()) {
+            _uiState.value = AddPlanUiState.Error("El nombre de la carrera es requerido")
+            return false
+        }
+        if (careerName.value.length > 200) {
+            _uiState.value = AddPlanUiState.Error("El nombre de la carrera es muy largo (máx 200)")
+            return false
+        }
+        if (yearLevel.value.isBlank()) {
+            _uiState.value = AddPlanUiState.Error("El año o nivel es requerido")
+            return false
+        }
+        if (yearLevel.value.length > 20) {
+            _uiState.value = AddPlanUiState.Error("El año es muy largo")
+            return false
+        }
+        if (yearLevel.value.toIntOrNull() == null) {
+             _uiState.value = AddPlanUiState.Error("El año debe ser un número válido")
+            return false
+        }
+        return true
+    }
+
+    fun savePlan() {
+        if (!validateGeneralInfo()) return
+
+        val uniId = selectedUniversityId.value!! // Checked in validateGeneralInfo
+        
         if (_cycles.value.isEmpty() || _cycles.value.all { it.courses.isEmpty() }) {
              _uiState.value = AddPlanUiState.Error("El plan debe tener al menos un curso")
             return
