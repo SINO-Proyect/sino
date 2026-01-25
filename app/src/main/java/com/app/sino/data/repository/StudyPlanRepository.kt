@@ -36,7 +36,7 @@ class StudyPlanRepository(private val tokenManager: TokenManager? = null) {
         return try {
             val email = tokenManager?.getEmail() ?: return Resource.Error("User not logged in")
             
-            // 1. Create Study Plan
+            //Create Study Plan
             val planResponse = api.createStudyPlan(email, plan)
             if (!planResponse.isSuccessful || planResponse.body()?.success != true) {
                 return Resource.Error("Failed to create Study Plan: ${planResponse.message()}")
@@ -45,10 +45,10 @@ class StudyPlanRepository(private val tokenManager: TokenManager? = null) {
             val createdPlan = planResponse.body()!!.data!!
             val planId = createdPlan.idStudyPlan ?: return Resource.Error("Created plan has no ID")
 
-            // 2. Assign ID to courses
+            //Assign ID to courses
             val coursesWithId = courses.map { it.copy(idStudyPlan = planId) }
 
-            // 3. Save Courses
+            //Save Courses
             val coursesResponse = api.createCourses(coursesWithId)
             if (coursesResponse.isSuccessful && coursesResponse.body()?.success == true) {
                 Resource.Success(true)

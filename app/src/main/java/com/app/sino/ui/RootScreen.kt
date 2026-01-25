@@ -1,5 +1,7 @@
 package com.app.sino.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
@@ -27,6 +29,7 @@ import com.app.sino.ui.navigation.AuthScreen
 import com.app.sino.ui.theme.SinoBlack
 import com.app.sino.ui.theme.SinoWhite
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RootScreen(
     viewModel: AuthViewModel = viewModel()

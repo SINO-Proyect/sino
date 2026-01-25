@@ -23,7 +23,7 @@ data class CourseDto(
     val numCredits: Int,
     val requirement: Boolean,
     val description: String? = null,
-    val prerequisites: List<String>? = null // List of prerequisite CODES extracted by AI
+    val prerequisites: List<String>? = null
 )
 
 data class AiExtractionResponse(

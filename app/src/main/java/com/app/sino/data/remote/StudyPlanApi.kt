@@ -30,8 +30,7 @@ interface StudyPlanApi {
 
     @GET("api/courses/study-plan/{id}")
     suspend fun getCoursesByStudyPlan(@Path("id") id: Int): Response<ApiResponse<List<CourseDto>>>
-    
-    // Asumiendo que existe un endpoint de universidades, si no, tendrás que crearlo o usar uno mock
+
     @GET("api/universities") 
     suspend fun getUniversities(
         @Query("page") page: Int = 0,

@@ -77,7 +77,7 @@ fun WelcomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Log In Button (Black Filled)
+
                 SinoButton(
                     text = "Log In",
                     onClick = onLoginClick,
@@ -87,19 +87,17 @@ fun WelcomeScreen(
                 
                 Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
 
-                // Or Label
                 Text(
                     text = "or",
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp // Keeping this one-off or could move to Dimens
+                        fontSize = 18.sp
                     ),
                     color = SinoWhite.copy(alpha = 0.6f)
                 )
 
                 Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
 
-                // Create Account Button (Outlined)
                 SinoButton(
                     text = "Create Account",
                     onClick = onSignUpClick,
@@ -107,11 +105,9 @@ fun WelcomeScreen(
                     contentColor = SinoWhite,
                     borderColor = SinoWhite
                 )
-                
-                // Reduced spacing for Google button
+
                 Spacer(modifier = Modifier.height(12.dp)) 
 
-                // Google Button (White with Border)
                 Button(
                     onClick = onGoogleClick,
                     modifier = Modifier
@@ -147,14 +143,4 @@ fun WelcomeScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WelcomeScreenPreview() {
-    WelcomeScreen(
-        onLoginClick = {},
-        onSignUpClick = {},
-        onGoogleClick = {}
-    )
 }

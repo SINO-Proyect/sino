@@ -1,5 +1,7 @@
 package com.app.sino.ui.auth
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,9 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -48,12 +47,14 @@ import com.app.sino.ui.theme.Dimens
 import com.app.sino.ui.theme.SinoBlack
 import com.app.sino.ui.theme.SinoWhite
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SignUpScreen(
     onSignUpSuccess: () -> Unit,
     viewModel: AuthViewModel = viewModel()
 ) {
     var name by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -145,6 +146,24 @@ fun SignUpScreen(
 
                             Spacer(modifier = Modifier.height(20.dp))
 
+                            SinoTextField(
+                                label = "Username",
+                                value = username,
+                                onValueChange = { 
+                                    username = it
+                                    viewModel.clearRegisterErrors()
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Next
+                                ),
+                                placeholder = "username",
+                                isError = registerFormState.usernameError != null,
+                                errorMessage = registerFormState.usernameError
+                            )
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
 
                             SinoTextField(
                                 label = "Email Address",
@@ -199,7 +218,7 @@ fun SignUpScreen(
                                     imeAction = ImeAction.Done
                                 ),
                                 keyboardActions = KeyboardActions(
-                                    onDone = { viewModel.register(email, password, confirmPassword, name, "") }
+                                    onDone = { viewModel.register(email, password, confirmPassword, name, username, "") }
                                 ),
                                 visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                                 trailingIconRes = if (isConfirmPasswordVisible) R.drawable.eye_bold else R.drawable.eye_closed_bold,
@@ -226,7 +245,7 @@ fun SignUpScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        val isSignUpEnabled = viewModel.isRegisterValid(email, password, confirmPassword, name)
+                        val isSignUpEnabled = viewModel.isRegisterValid(email, password, confirmPassword, name, username)
 
 
                         if (authState is Resource.Loading) {
@@ -241,7 +260,7 @@ fun SignUpScreen(
                             SinoButton(
                                 text = "Sign Up",
                                 onClick = {
-                                    viewModel.register(email, password, confirmPassword, name, "")
+                                    viewModel.register(email, password, confirmPassword, name, username, "")
                                 },
                                 containerColor = if (isSignUpEnabled) SinoWhite else Color.DarkGray.copy(alpha = 0.15f),
                                 contentColor = if (isSignUpEnabled) SinoBlack else Color.Gray.copy(alpha = 0.5f),
@@ -255,12 +274,4 @@ fun SignUpScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SignUpScreenPreview() {
-    SignUpScreen(
-        onSignUpSuccess = {}
-    )
 }

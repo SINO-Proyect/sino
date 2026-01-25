@@ -42,8 +42,7 @@ fun MainScreen(onLogout: () -> Unit) {
     val bottomNavScreens = listOf(
         Screen.Home, Screen.Path, Screen.Courses, Screen.Calendar, Screen.Profile
     )
-    
-    // Determine current screen for UI properties (Title, etc.)
+
     val currentScreen = bottomNavScreens.find { it.route == currentRoute }
         ?: if (currentRoute == Screen.AddStudyPlan.route) Screen.AddStudyPlan else Screen.Home
 
@@ -80,7 +79,7 @@ fun MainScreen(onLogout: () -> Unit) {
             }
         },
         bottomBar = { 
-            // Only show bottom nav if we are on one of the main screens
+
             if (bottomNavScreens.any { it.route == currentRoute }) {
                 BottomNavigationBar(navController = navController)
             }

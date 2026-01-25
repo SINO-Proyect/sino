@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,9 +44,8 @@ fun AddStudyPlanScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
-    
-    // Estados de navegación interna del wizard
-    var currentStep by remember { mutableIntStateOf(0) } // 0: Datos, 1: Malla
+
+    var currentStep by remember { mutableIntStateOf(0) }
 
     val pdfLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -561,7 +559,7 @@ fun AddCourseDialog(
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
-                .fillMaxWidth() // Usa todo el ancho disponible del diálogo estándar
+                .fillMaxWidth()
                 .fillMaxHeight(0.9f),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -569,7 +567,7 @@ fun AddCourseDialog(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp) // El padding de afuera es el padding de los campos internos
+                    .padding(24.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -631,7 +629,6 @@ fun AddCourseDialog(
                     Text("Es Curso Obligatorio", style = MaterialTheme.typography.bodyLarge)
                 }
 
-                // Sección Prerrequisitos
                 Text("Cursos Requisito", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 
                 if (availablePrerequisites.isNotEmpty()) {

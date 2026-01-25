@@ -38,7 +38,6 @@ fun BottomNavigationBar(navController: NavController) {
     )
 
     Column {
-        // Border superior sutil
         Box(
             modifier = Modifier
                 .fillMaxWidth()

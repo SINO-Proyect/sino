@@ -113,7 +113,6 @@ class AuthRepository(
                     tokenManager.clearTokens()
                     emit(false)
                 } else {
-                    // Other server errors, maybe keep session or retry?
                     // For robustness, if it's not 401/404, we assume offline/temp issue
                     emit(true)
                 }

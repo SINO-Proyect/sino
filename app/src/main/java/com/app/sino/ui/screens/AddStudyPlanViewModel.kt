@@ -21,10 +21,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 
-// Estructuras locales para manejo de UI ágil antes de guardar
 data class LocalCycle(
     val id: String = UUID.randomUUID().toString(),
-    val name: String, // "Ciclo 1", "Semestre 2024-1"
+    val name: String,
     val courses: List<LocalCourse> = emptyList()
 )
 
@@ -34,7 +33,7 @@ data class LocalCourse(
     val code: String,
     val credits: Int,
     val isObligatory: Boolean = true,
-    val prerequisitesIds: List<String> = emptyList(), // IDs de otros LocalCourses
+    val prerequisitesIds: List<String> = emptyList(),
     val corequisitesIds: List<String> = emptyList(),
     val description: String = ""
 )
@@ -50,21 +49,17 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
     private val _universities = MutableStateFlow<List<UniversityDto>>(emptyList())
     val universities: StateFlow<List<UniversityDto>> = _universities.asStateFlow()
 
-    // --- Form State (Datos Generales) ---
     var selectedUniversityId = MutableStateFlow<Int?>(null)
     var planName = MutableStateFlow("")
     var careerName = MutableStateFlow("")
     var yearLevel = MutableStateFlow("")
-    var periodType = MutableStateFlow("Semestre") // Semestre, Cuatrimestre, Trimestre, Anual
+    var periodType = MutableStateFlow("Semestre")
 
-    // --- Malla Curricular State ---
-    // Lista ordenada de ciclos
     private val _cycles = MutableStateFlow<List<LocalCycle>>(emptyList())
     val cycles: StateFlow<List<LocalCycle>> = _cycles.asStateFlow()
 
     init {
         loadUniversities()
-        // Inicializar con un ciclo por defecto (Grado I, Número 1)
         addCycle("I", "1")
     }
 
@@ -83,7 +78,6 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // --- Gestión de Ciclos ---
     fun addCycle(degree: String, number: String) {
         val cycleName = "$degree $number ${periodType.value}"
         _cycles.update { it + LocalCycle(name = cycleName) }
@@ -112,7 +106,6 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // --- Gestión de Cursos ---
     fun addCourseToCycle(cycleId: String, course: LocalCourse) {
         _cycles.update { list ->
             list.map { cycle ->
@@ -170,12 +163,10 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
         return allCycles.subList(0, currentIndex).flatMap { it.courses }
     }
 
-    // --- Lógica PDF (Adaptada - Placeholder de lo que había) ---
     fun onPdfSelected(uri: Uri, context: Context) {
-        // Implementación simplificada o la que tenías antes
+
     }
 
-    // --- Guardar Plan Final ---
     fun savePlan() {
         val uniId = selectedUniversityId.value
         if (uniId == null) {
