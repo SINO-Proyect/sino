@@ -19,7 +19,14 @@ class AuthRepository(
         try {
             val response = api.register(request)
             if (response.isSuccessful && response.body() != null) {
-                emit(Resource.Success(response.body()!!))
+                val body = response.body()!!
+                if (body.success && body.data != null) {
+                    body.data.idToken?.let { tokenManager.saveToken(it) }
+                    body.data.refreshToken?.let { tokenManager.saveRefreshToken(it) }
+                    body.data.email?.let { tokenManager.saveEmail(it) }
+                    body.data.emailVerified?.let { tokenManager.saveEmailVerified(it) }
+                }
+                emit(Resource.Success(body))
             } else {
                 emit(Resource.Error(response.message() ?: "Registration failed"))
             }

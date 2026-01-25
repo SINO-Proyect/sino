@@ -6,13 +6,13 @@
 
     <path
         android:pathData="M-76,-79h592v1055h-592z"
-        android:fillColor="#FAFAFA"/>
+        android:fillColor="#FFD6DF"/>
 
     <path
         android:pathData="M40,40l400,-200l200,360l-400,200z"
-        android:fillColor="#EEEEEE"/>
+        android:fillColor="#FF9FB3"/>
 
     <path
         android:pathData="M110,180C200,90 360,200 330,330C300,460 120,420 80,300Z"
-        android:fillColor="#F5F5F5"/>
+        android:fillColor="#FFF0F4"/>
 </vector>

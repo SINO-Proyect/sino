@@ -9,24 +9,24 @@ import retrofit2.http.POST
 
 interface AuthApi {
 
-    @POST("register")
+    @POST("auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<AuthResponse>
 
-    @POST("login")
+    @POST("auth/login")
     suspend fun login(@Body request: LoginRequest): Response<AuthResponse>
 
-    @POST("recover")
+    @POST("auth/recover")
     suspend fun recoverPassword(@Body request: RecoverRequest): Response<AuthResponse>
 
-    @POST("refresh-token")
+    @POST("auth/refresh-token")
     suspend fun refreshToken(@Body request: RefreshTokenRequest): Response<AuthResponse>
 
-    @POST("send-verification")
+    @POST("auth/send-verification")
     suspend fun sendVerificationEmail(@Body request: VerificationRequest): Response<AuthResponse>
 
-    @GET("verify")
+    @GET("auth/verify")
     suspend fun verifyToken(@Header("Authorization") token: String): Response<AuthResponse>
 
-    @POST("logout")
+    @POST("auth/logout")
     suspend fun logout(@Header("Authorization") token: String): Response<AuthResponse>
 }
