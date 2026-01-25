@@ -18,9 +18,8 @@ object Dimens {
     val ButtonCornerRadius = 28.dp
     val TextFieldHeight = 50.dp
     val TextFieldCornerRadius = 12.dp
-    
 
-    val BlurRadius = 200.dp
+    val BlurRadius = 300.dp
     val BottomCardCornerRadius = 48.dp
     val HeaderTopPadding = 60.dp
     val HeaderBottomPadding = 40.dp

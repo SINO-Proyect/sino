@@ -96,7 +96,7 @@ fun LoginScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Color.Transparent
     ) { paddingValues ->
-        SinoScreenWrapper(backgroundImageRes = R.drawable.bg1) {
+        SinoScreenWrapper(backgroundImageRes = R.drawable.bg6) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -113,7 +113,7 @@ fun LoginScreen(
                         text = "Welcome Back",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = SinoWhite
+                        color = SinoBlack
                     )
                 }
 

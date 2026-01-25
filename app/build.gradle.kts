@@ -69,6 +69,7 @@ dependencies {
     // QR Generation
     implementation(libs.zxing.android.embedded)
     implementation(libs.zxing.core)
+    implementation(libs.identity.jvm)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
