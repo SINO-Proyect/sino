@@ -1,7 +1,9 @@
 package com.app.sino.ui.auth
 
 import android.app.Application
+import android.os.Build
 import android.util.Patterns
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.sino.data.local.TokenManager
@@ -17,12 +19,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
+import com.app.sino.data.remote.dto.UserDto
+import com.app.sino.data.repository.UserRepository
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = AuthRepository(
         RetrofitClient.api,
         TokenManager(application)
     )
+    
+    private val userRepository = UserRepository(RetrofitClient.userApi)
 
     private val _authState = MutableStateFlow<Resource<Unit>?>(null)
     val authState = _authState.asStateFlow()
@@ -103,14 +112,16 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length >= 6
     }
 
-    fun isRegisterValid(email: String, password: String, confirm: String, name: String): Boolean {
+    fun isRegisterValid(email: String, password: String, confirm: String, name: String, username: String): Boolean {
         return email.isNotBlank() && 
                Patterns.EMAIL_ADDRESS.matcher(email).matches() && 
                password.length >= 6 && 
                password == confirm && 
-               name.isNotBlank()
+               name.isNotBlank() &&
+               username.isNotBlank()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun login(email: String, password: String) {
         val emailError = if (email.isBlank()) "Please enter your email address." else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) "Please enter a valid email address." else null
         val passwordError = if (password.isBlank()) "Please enter your password." else null
@@ -128,6 +139,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             repository.login(LoginRequest(email, password)).collect { result ->
                 when (result) {
                     is Resource.Success -> {
+                        // Sync with MySQL
+                        result.data?.data?.let { authData ->
+                             if (authData.uid != null && authData.email != null) {
+                                 syncUser(authData.uid, authData.email, null, null)
+                             }
+                        }
                         _authState.value = Resource.Success(Unit)
                         _validationEvent.send(ValidationEvent.Success)
                     }
@@ -143,18 +160,21 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun register(email: String, password: String, confirmPassword: String, displayName: String, phone: String) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun register(email: String, password: String, confirmPassword: String, displayName: String, username: String, phone: String) {
         val emailError = if (email.isBlank()) "Please enter your email address." else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) "The email format is incorrect." else null
         val passwordError = if (password.length < 6) "Password must be at least 6 characters long." else null
         val confirmPasswordError = if (password != confirmPassword) "The passwords do not match." else null
         val nameError = if (displayName.isBlank()) "Please enter your full name." else null
+        val usernameError = if (username.isBlank()) "Please enter a username." else null
 
-        if (emailError != null || passwordError != null || confirmPasswordError != null || nameError != null) {
+        if (emailError != null || passwordError != null || confirmPasswordError != null || nameError != null || usernameError != null) {
             _registerFormState.value = RegisterFormState(
                 emailError = emailError,
                 passwordError = passwordError,
                 confirmPasswordError = confirmPasswordError,
-                nameError = nameError
+                nameError = nameError,
+                usernameError = usernameError
             )
             return
         }
@@ -163,21 +183,71 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             _authState.value = Resource.Loading()
-            repository.register(RegisterRequest(email, password, displayName, phone)).collect { result ->
-                when (result) {
+            
+            userRepository.checkUsername(username).collect { checkResult ->
+                when(checkResult) {
+                    is Resource.Loading -> {
+                        // Keep loading
+                    }
                     is Resource.Success -> {
-                        _authState.value = Resource.Success(Unit)
-                         _validationEvent.send(ValidationEvent.Success)
+                        if (checkResult.data == true) {
+                            // Username taken
+                            _authState.value = null // Stop loading indicator
+                            _registerFormState.value = RegisterFormState(usernameError = "Username is already taken")
+                        } else {
+                            // Username available -> Proceed
+                            performFirebaseRegistration(email, password, displayName, username, phone)
+                        }
                     }
                     is Resource.Error -> {
-                         _authState.value = Resource.Error(result.message ?: "Registration failed")
-                         _validationEvent.send(ValidationEvent.Error(result.message ?: "Registration failed"))
+                        _authState.value = Resource.Error(checkResult.message ?: "Failed to verify username availability")
+                        _validationEvent.send(ValidationEvent.Error(checkResult.message ?: "Failed to verify username availability"))
                     }
-                    is Resource.Loading -> _authState.value = Resource.Loading()
                 }
             }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun performFirebaseRegistration(email: String, password: String, displayName: String, username: String, phone: String) {
+        repository.register(RegisterRequest(email, password, displayName, phone)).collect { result ->
+            when (result) {
+                is Resource.Success -> {
+                    // Sync with MySQL including username and fullName
+                    result.data?.data?.let { authData ->
+                         if (authData.uid != null && authData.email != null) {
+                             syncUser(authData.uid, authData.email, username, displayName)
+                         }
+                    }
+                    _authState.value = Resource.Success(Unit)
+                     _validationEvent.send(ValidationEvent.Success)
+                }
+                is Resource.Error -> {
+                     _authState.value = Resource.Error(result.message ?: "Registration failed")
+                     _validationEvent.send(ValidationEvent.Error(result.message ?: "Registration failed"))
+                }
+                is Resource.Loading -> _authState.value = Resource.Loading()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun syncUser(uid: String, email: String, username: String?, fullName: String?) {
+        viewModelScope.launch {
+            val userDto = UserDto(
+                firebaseUid = uid,
+                email = email,
+                username = username,
+                fullName = fullName,
+                dateRegister = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                type = "freemium"
+            )
+            userRepository.syncUser(userDto).collect {
+                // Log sync result
+            }
+        }
+    }
+
 
     fun isRecoverValid(email: String): Boolean {
         return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
@@ -244,7 +314,8 @@ data class RegisterFormState(
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null,
-    val nameError: String? = null
+    val nameError: String? = null,
+    val usernameError: String? = null
 )
 
 data class ForgotPasswordState(

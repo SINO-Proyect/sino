@@ -29,4 +29,5 @@ object RetrofitClient {
 
     val api: AuthApi = retrofit.create(AuthApi::class.java)
     val studyPlanApi: StudyPlanApi = retrofit.create(StudyPlanApi::class.java)
+    val userApi: UserApi = retrofit.create(UserApi::class.java)
 }

@@ -72,7 +72,6 @@ fun ForgotPasswordScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Top Section (Header)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -87,7 +86,6 @@ fun ForgotPasswordScreen(
                     )
                 }
 
-                // Bottom Section (Container)
                 SinoBottomCard(
                     modifier = Modifier.weight(1f)
                 ) {
@@ -107,7 +105,6 @@ fun ForgotPasswordScreen(
                         
                         Spacer(modifier = Modifier.height(32.dp))
 
-                        // Email Field
                         SinoTextField(
                             label = "Email Address",
                             value = email,
