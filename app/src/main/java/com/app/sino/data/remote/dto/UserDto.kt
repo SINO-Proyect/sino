@@ -14,5 +14,6 @@ data class UserDto(
     @SerializedName("email") val email: String,
     @SerializedName("dateRegister") val dateRegister: String? = null,
     @SerializedName("datePurchase") val datePurchase: String? = null,
-    @SerializedName("type") val type: String = "freemium"
+    @SerializedName("type") val type: String = "freemium",
+    @SerializedName("lastLogin") val lastLogin: String? = null
 )

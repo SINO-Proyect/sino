@@ -92,7 +92,11 @@ fun MainScreen(onLogout: () -> Unit) {
             modifier = Modifier.padding(if (currentRoute == Screen.AddStudyPlan.route) PaddingValues(0.dp) else innerPadding)
         ) {
             composable(Screen.Home.route) { HomeScreen() }
-            composable(Screen.Path.route) { PathScreen() }
+            composable(Screen.Path.route) { 
+                PathScreen(
+                    onAddPlanClick = { navController.navigate(Screen.AddStudyPlan.route) }
+                ) 
+            }
             composable(Screen.Courses.route) { 
                 CoursesScreen(
                     onAddPlanClick = { navController.navigate(Screen.AddStudyPlan.route) }

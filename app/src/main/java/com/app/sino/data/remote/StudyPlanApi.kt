@@ -49,4 +49,16 @@ interface StudyPlanApi {
 
     @PUT("api/courses/{id}")
     suspend fun updateCourse(@Path("id") id: Int, @Body course: CourseDto): Response<ApiResponse<CourseDto>>
+
+    @GET("api/student-courses/user/{userId}")
+    suspend fun getStudentCourses(@Path("userId") userId: Int): Response<ApiResponse<List<StudentCourseDto>>>
+
+    @POST("api/student-courses")
+    suspend fun updateStudentCourse(@Body data: StudentCourseDto): Response<ApiResponse<StudentCourseDto>>
+
+    @POST("api/student-courses/initialize")
+    suspend fun initializeStudentPlan(
+        @Query("userId") userId: Int,
+        @Query("planId") planId: Int
+    ): Response<ApiResponse<Void>>
 }

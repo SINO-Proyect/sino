@@ -93,31 +93,58 @@ fun ProfileScreen(
         onRefresh = { viewModel.loadUserProfile() },
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(horizontal = 20.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Surface(
-                color = SinoWhite.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(50),
-                border = androidx.compose.foundation.BorderStroke(1.dp, SinoWhite.copy(alpha = 0.3f))
-            ) {
-                Text(
-                    text = "$planType PLAN",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = SinoWhite,
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                    letterSpacing = 1.sp
-                )
+        if (userState == null && isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = SinoWhite)
             }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 20.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(24.dp))
+                if (planType.contains("PREMIUM")) {
+                    Surface(
+                        color = Color(0xFF1A1A1A),
+                        shape = RoundedCornerShape(50),
+                        border = androidx.compose.foundation.BorderStroke(
+                            width = 1.5.dp,
+                            brush = Brush.linearGradient(
+                                colors = listOf(Color(0xFFBF953F), Color(0xFFFCF6BA), Color(0xFFB38728))
+                            )
+                        )
+                    ) {
+                        Text(
+                            text = "✨ $planType PLAN",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFFD4AF37),
+                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                            letterSpacing = 1.sp
+                        )
+                    }
+                } else {
+                    Surface(
+                        color = SinoWhite.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(50),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, SinoWhite.copy(alpha = 0.3f))
+                    ) {
+                        Text(
+                            text = "$planType PLAN",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = SinoWhite,
+                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                            letterSpacing = 1.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
 
             Box(
                 contentAlignment = Alignment.BottomEnd
@@ -225,6 +252,7 @@ fun ProfileScreen(
             
             Spacer(modifier = Modifier.height(32.dp))
         }
+    }
     }
 }
 
