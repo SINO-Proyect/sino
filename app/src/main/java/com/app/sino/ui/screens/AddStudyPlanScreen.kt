@@ -85,7 +85,7 @@ fun AddStudyPlanScreen(
                         containerColor = MaterialTheme.colorScheme.background
                     )
                 )
-                Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             }
         },
         bottomBar = {
@@ -246,7 +246,7 @@ fun GeneralInfoStep(viewModel: AddStudyPlanViewModel) {
             viewModel = viewModel
         )
 
-        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
 
         HeaderSection(
             title = "Detalles de la Carrera",
@@ -574,7 +574,7 @@ fun UniversitySearchDialog(
                             }
                             
                             item {
-                                Divider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                                 TextButton(
                                     onClick = { showCreateDialog = true },
                                     modifier = Modifier.fillMaxWidth()
@@ -819,9 +819,9 @@ fun CycleItemView(
                                 Icon(Icons.Default.Delete, null, tint = Color.Gray)
                             }
                         }
-                        if (index < cycle.courses.size - 1) Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                        if (index < cycle.courses.size - 1) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     }
-                    Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1152,7 +1152,7 @@ fun AddCourseDialog(
                             minLines = 2
                         )
 
-                        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
 
                         // PREREQUISITES
                         RequirementSearchList(
@@ -1167,7 +1167,7 @@ fun AddCourseDialog(
                             }
                         )
 
-                        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
 
                         // COREQUISITES
                         RequirementSearchList(

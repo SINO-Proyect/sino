@@ -352,7 +352,7 @@ fun CourseRowItem(
 
             if (!course.prerequisites.isNullOrEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Divider(color = SinoWhite.copy(alpha = 0.1f))
+                HorizontalDivider(color = SinoWhite.copy(alpha = 0.1f))
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
