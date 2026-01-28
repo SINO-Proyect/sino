@@ -14,15 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -126,30 +118,42 @@ fun AddStudyPlanScreen(
             }
             
             if (showCancelDialog) {
-                AlertDialog(
+                Dialog(
                     onDismissRequest = { showCancelDialog = false },
-                    title = { Text("¿Cancelar creación?", fontWeight = FontWeight.Bold) },
-                    text = { Text("Se perderán todos los datos ingresados hasta el momento.") },
-                    confirmButton = {
-                        Button(
-                            onClick = { 
-                                showCancelDialog = false
-                                onBack() 
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    properties = DialogProperties(usePlatformDefaultWidth = false)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize().background(Color.Black),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(0.9f).border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(16.dp)),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
-                            Text("Sí, cancelar")
+                            Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                Text("¿Cancelar creación?", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                                Text("Se perderán todos los datos ingresados hasta el momento.", style = MaterialTheme.typography.bodyMedium)
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                                    TextButton(onClick = { showCancelDialog = false }) {
+                                        Text("No, continuar")
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Button(
+                                        onClick = { 
+                                            showCancelDialog = false
+                                            onBack() 
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Text("Sí, cancelar")
+                                    }
+                                }
+                            }
                         }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showCancelDialog = false }) {
-                            Text("No, continuar")
-                        }
-                    },
-                    modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(16.dp)),
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(16.dp)
-                )
+                    }
+                }
             }
         }
     }
@@ -178,8 +182,8 @@ fun BottomActionBar(
                     onClick = onCancel,
                     modifier = Modifier.weight(1f).height(50.dp),
                     shape = RoundedCornerShape(12.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD32F2F)),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFD32F2F))
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) {
                     Text("Cancelar", fontWeight = FontWeight.Bold)
                 }
@@ -239,11 +243,10 @@ fun GeneralInfoStep(viewModel: AddStudyPlanViewModel) {
 
         UniversitySelectorField(
             selectedName = selectedUniName,
-            onOpenSearch = { /* Logic handled inside component via state */ },
             viewModel = viewModel
         )
 
-        Divider()
+        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
 
         HeaderSection(
             title = "Detalles de la Carrera",
@@ -259,7 +262,8 @@ fun GeneralInfoStep(viewModel: AddStudyPlanViewModel) {
                 Icon(
                     painter = painterResource(id = com.app.sino.R.drawable.notebook_duotone), 
                     contentDescription = null, 
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
                 ) 
             }
         )
@@ -404,7 +408,6 @@ fun LabeledDropdown(
 @Composable
 fun UniversitySelectorField(
     selectedName: String?,
-    onOpenSearch: () -> Unit,
     viewModel: AddStudyPlanViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -428,7 +431,8 @@ fun UniversitySelectorField(
                 Icon(
                     painter = painterResource(id = com.app.sino.R.drawable.buildings_duotone),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Row(
@@ -470,102 +474,115 @@ fun UniversitySearchDialog(
     var showCreateDialog by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
-        ) {
-            Column(modifier = Modifier.padding(24.dp)) {
-                // Header
-                Row(
-                    modifier = Modifier.fillMaxWidth(), 
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Buscar Universidad", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                    IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, null)
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Search Bar
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { 
-                        searchQuery = it 
-                        viewModel.searchUniversities(it)
-                    },
-                    placeholder = { Text("Escribe para buscar...") },
-                    leadingIcon = { Icon(Icons.Default.Search, null) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // List
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    if (universities.isEmpty()) {
-                         item {
-                            Column(
-                                modifier = Modifier.fillMaxWidth().padding(32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text("No encontramos resultados", color = Color.Gray)
-                                TextButton(onClick = { showCreateDialog = true }) {
-                                    Text("Agregar Nueva Universidad")
-                                }
-                            }
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black), contentAlignment = Alignment.Center) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 6.dp
+            ) {
+                Column(modifier = Modifier.padding(24.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(), 
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Buscar Universidad", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                        IconButton(onClick = onDismiss) {
+                            Icon(Icons.Default.Close, null)
                         }
-                    } else {
-                        items(universities) { uni ->
-                            Card(
-                                onClick = { onSelect(uni) },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { 
+                            searchQuery = it 
+                            viewModel.searchUniversities(it)
+                        },
+                        placeholder = { Text("Escribe para buscar...") },
+                        leadingIcon = { Icon(Icons.Default.Search, null) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        if (universities.isEmpty()) {
+                             item {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth().padding(32.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Icon(
-                                        painter = painterResource(id = com.app.sino.R.drawable.buildings_duotone), 
-                                        contentDescription = null, 
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Column {
-                                        Text(uni.dscName, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
-                                        uni.dscCountry?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = Color.Gray) }
+                                    Text("No encontramos resultados", color = Color.Gray)
+                                    TextButton(onClick = { showCreateDialog = true }) {
+                                        Text("Agregar Nueva Universidad")
                                     }
                                 }
                             }
-                        }
-                        
-                        item {
-                            Divider(modifier = Modifier.padding(vertical = 8.dp))
-                            TextButton(
-                                onClick = { showCreateDialog = true },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Icon(Icons.Default.Add, null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("¿No está tu universidad? Agregala aquí")
+                        } else {
+                            val groupedUnis = universities.groupBy { it.dscName.first().uppercaseChar() }.toSortedMap()
+                            
+                            groupedUnis.forEach { (initial, unis) ->
+                                item {
+                                    Text(
+                                        text = initial.toString(),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp, bottom = 4.dp)
+                                    )
+                                }
+                                
+                                items(unis) { uni ->
+                                    Card(
+                                        onClick = { onSelect(uni) },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(12.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = com.app.sino.R.drawable.buildings_duotone), 
+                                                contentDescription = null, 
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(12.dp))
+                                            Column {
+                                                Text(uni.dscName, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
+                                                uni.dscCountry?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = Color.Gray) }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            item {
+                                Divider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                                TextButton(
+                                    onClick = { showCreateDialog = true },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(Icons.Default.Add, null)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("¿No está tu universidad? Agregala aquí")
+                                }
                             }
                         }
                     }
@@ -581,13 +598,11 @@ fun UniversitySearchDialog(
             onSave = { name, country ->
                 viewModel.createAndSelectUniversity(name, country)
                 showCreateDialog = false
-                onDismiss() // Close search dialog too after creation
+                onDismiss()
             }
         )
     }
 }
-
-// ---------------- CURRICULUM STEP RE-STYLE ----------------
 
 @Composable
 fun CurriculumStep(viewModel: AddStudyPlanViewModel) {
@@ -596,6 +611,7 @@ fun CurriculumStep(viewModel: AddStudyPlanViewModel) {
     
     var showCourseDialog by remember { mutableStateOf(false) }
     var showCycleDialog by remember { mutableStateOf(false) }
+    var cycleToDelete by remember { mutableStateOf<String?>(null) }
     var selectedCycleIdForCourse by remember { mutableStateOf<String?>(null) }
     var courseToEdit by remember { mutableStateOf<LocalCourse?>(null) }
 
@@ -625,7 +641,7 @@ fun CurriculumStep(viewModel: AddStudyPlanViewModel) {
                         showCourseDialog = true
                     },
                     onRemoveCourse = { viewModel.removeCourse(cycle.id, it) },
-                    onRemoveCycle = { viewModel.removeCycle(cycle.id) }
+                    onRemoveCycle = { cycleToDelete = cycle.id }
                 )
             }
             
@@ -634,12 +650,51 @@ fun CurriculumStep(viewModel: AddStudyPlanViewModel) {
                     onClick = { showCycleDialog = true },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     shape = RoundedCornerShape(16.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.Gray),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(Icons.Default.Add, null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Agregar Nuevo Periodo ($periodType)", fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+
+    if (cycleToDelete != null) {
+        Dialog(
+            onDismissRequest = { cycleToDelete = null },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(0.9f).border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(16.dp)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Text("¿Eliminar periodo?", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                        Text("Se eliminarán todos los cursos dentro de este periodo. Esta acción no se puede deshacer.", style = MaterialTheme.typography.bodyMedium)
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                            TextButton(onClick = { cycleToDelete = null }) {
+                                Text("Cancelar")
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Button(
+                                onClick = { 
+                                    viewModel.removeCycle(cycleToDelete!!)
+                                    cycleToDelete = null 
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text("Eliminar")
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -658,9 +713,13 @@ fun CurriculumStep(viewModel: AddStudyPlanViewModel) {
 
     if (showCourseDialog && selectedCycleIdForCourse != null) {
         val availablePrereqs = viewModel.getAvailablePrerequisites(selectedCycleIdForCourse!!)
+        val currentCycle = cycles.find { it.id == selectedCycleIdForCourse }
+        val availableCoreqs = currentCycle?.courses?.filter { it.tempId != courseToEdit?.tempId } ?: emptyList()
+
         AddCourseDialog(
             initialCourse = courseToEdit,
             availablePrerequisites = availablePrereqs,
+            availableCorequisites = availableCoreqs,
             onDismiss = { 
                 showCourseDialog = false
                 courseToEdit = null
@@ -693,8 +752,8 @@ fun CycleItemView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(cycle.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            IconButton(onClick = onRemoveCycle, modifier = Modifier.size(24.dp)) {
-                Icon(Icons.Default.Close, null, tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
+            IconButton(onClick = onRemoveCycle, modifier = Modifier.size(28.dp)) {
+                Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f), modifier = Modifier.size(20.dp))
             }
         }
 
@@ -727,7 +786,7 @@ fun CycleItemView(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
-                                color = if (course.isObligatory) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
+                                color = MaterialTheme.colorScheme.primaryContainer,
                             ) {
                                 Text(
                                     course.code,
@@ -740,7 +799,21 @@ fun CycleItemView(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(course.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
-                                Text("${course.credits} créditos", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("${course.credits} créditos", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Surface(
+                                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
+                                        shape = RoundedCornerShape(4.dp)
+                                    ) {
+                                        Text(
+                                            course.typeCourse, 
+                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                        )
+                                    }
+                                }
                             }
                             IconButton(onClick = { onRemoveCourse(course.tempId) }, modifier = Modifier.size(24.dp)) {
                                 Icon(Icons.Default.Delete, null, tint = Color.Gray)
@@ -801,46 +874,53 @@ fun AddUniversityDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Card(
+        Box(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.95f)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
-                Text(
-                    "Agregar Nueva Universidad",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        "Agregar Nueva Universidad",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nombre de la Universidad") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-
-                OutlinedTextField(
-                    value = country,
-                    onValueChange = { country = it },
-                    label = { Text("País") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = onDismiss) { Text("Cancelar") }
-                    Button(
-                        onClick = { onSave(name, country) },
-                        enabled = name.isNotBlank(),
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Nombre de la Universidad") },
+                        modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
-                    ) { Text("Crear y Seleccionar") }
+                    )
+
+                    OutlinedTextField(
+                        value = country,
+                        onValueChange = { country = it },
+                        label = { Text("País") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        TextButton(onClick = onDismiss) { Text("Cancelar") }
+                        Button(
+                            onClick = { onSave(name, country) },
+                            enabled = name.isNotBlank(),
+                            shape = RoundedCornerShape(12.dp)
+                        ) { Text("Crear y Seleccionar") }
+                    }
                 }
             }
         }
@@ -860,42 +940,49 @@ fun AddCycleDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Card(
+        Box(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.95f)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
-                Text("Nuevo $periodTypeName", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                
-                OutlinedTextField(
-                    value = degree,
-                    onValueChange = { degree = it },
-                    label = { Text("Grado (ej. I, II)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-
-                OutlinedTextField(
-                    value = number,
-                    onValueChange = { number = it },
-                    label = { Text("Número (ej. 1, 2)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-
-                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                    TextButton(onClick = onDismiss) { Text("Cancelar") }
-                    Button(
-                        onClick = { onSave(degree, number) },
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text("Nuevo $periodTypeName", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    
+                    OutlinedTextField(
+                        value = degree,
+                        onValueChange = { degree = it },
+                        label = { Text("Grado (ej. I, II)") },
+                        modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
-                    ) { Text("Agregar") }
+                    )
+
+                    OutlinedTextField(
+                        value = number,
+                        onValueChange = { number = it },
+                        label = { Text("Número (ej. 1, 2)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+
+                    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                        TextButton(onClick = onDismiss) { Text("Cancelar") }
+                        Button(
+                            onClick = { onSave(degree, number) },
+                            shape = RoundedCornerShape(12.dp)
+                        ) { Text("Agregar") }
+                    }
                 }
             }
         }
@@ -907,14 +994,19 @@ fun AddCycleDialog(
 fun AddCourseDialog(
     initialCourse: LocalCourse? = null,
     availablePrerequisites: List<LocalCourse>,
+    availableCorequisites: List<LocalCourse>,
     onDismiss: () -> Unit,
     onSave: (LocalCourse) -> Unit
 ) {
     var name by remember { mutableStateOf(initialCourse?.name ?: "") }
     var code by remember { mutableStateOf(initialCourse?.code ?: "") }
     var credits by remember { mutableStateOf(initialCourse?.credits?.toString() ?: "3") }
-    var isObligatory by remember { mutableStateOf(initialCourse?.isObligatory ?: true) }
     var description by remember { mutableStateOf(initialCourse?.description ?: "") }
+    var academicLevel by remember { mutableStateOf(initialCourse?.typeCourse ?: "Bachillerato") }
+    
+    var prereqSearch by remember { mutableStateOf("") }
+    var coreqSearch by remember { mutableStateOf("") }
+    
     var showError by remember { mutableStateOf(false) }
     
     val selectedPrereqs = remember { 
@@ -922,155 +1014,277 @@ fun AddCourseDialog(
             initialCourse?.prerequisitesIds?.let { addAll(it) } 
         } 
     }
+    val selectedCoreqs = remember {
+        mutableStateListOf<String>().apply {
+            initialCourse?.corequisitesIds?.let { addAll(it) }
+        }
+    }
+
+    val filteredPrereqs = remember(prereqSearch, availablePrerequisites) {
+        availablePrerequisites.filter { 
+            it.name.contains(prereqSearch, ignoreCase = true) || 
+            it.code.contains(prereqSearch, ignoreCase = true) 
+        }
+    }
+
+    val filteredCoreqs = remember(coreqSearch, availableCorequisites) {
+        availableCorequisites.filter { 
+            it.name.contains(coreqSearch, ignoreCase = true) || 
+            it.code.contains(coreqSearch, ignoreCase = true) 
+        }
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Card(
+        Box(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .fillMaxHeight(0.9f)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
+            Card(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .fillMaxWidth(0.95f)
+                    .fillMaxHeight(0.9f)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
-                Text(
-                    if (initialCourse == null) "Nuevo Curso" else "Editar Curso", 
-                    style = MaterialTheme.typography.headlineSmall, 
-                    fontWeight = FontWeight.ExtraBold
-                )
-                
-                if (showError) {
-                    Text(
-                        "Nombre, Código y Créditos son obligatorios.",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // Header
+                    Column(modifier = Modifier.padding(top = 24.dp, start = 24.dp, end = 24.dp)) {
+                        Text(
+                            if (initialCourse == null) "Nuevo Curso" else "Editar Curso", 
+                            style = MaterialTheme.typography.headlineSmall, 
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        if (showError) {
+                            Text(
+                                "Campos marcados con * son obligatorios.",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                    }
 
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nombre del Curso *") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    isError = showError && name.isBlank()
-                )
+                    // Scrollable Content
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        // Basic Info
+                        OutlinedTextField(
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text("Nombre del Curso *") },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            isError = showError && name.isBlank()
+                        )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedTextField(
-                        value = code,
-                        onValueChange = { code = it },
-                        label = { Text("Código *") },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        isError = showError && code.isBlank()
-                    )
-                    OutlinedTextField(
-                        value = credits,
-                        onValueChange = { if (it.all { char -> char.isDigit() }) credits = it },
-                        label = { Text("Créditos *") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(0.8f),
-                        shape = RoundedCornerShape(12.dp),
-                        isError = showError && credits.isBlank()
-                    )
-                }
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            OutlinedTextField(
+                                value = code,
+                                onValueChange = { code = it },
+                                label = { Text("Código *") },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                isError = showError && code.isBlank()
+                            )
+                            OutlinedTextField(
+                                value = credits,
+                                onValueChange = { if (it.all { char -> char.isDigit() }) credits = it },
+                                label = { Text("Créditos *") },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                modifier = Modifier.weight(0.8f),
+                                shape = RoundedCornerShape(12.dp),
+                                isError = showError && credits.isBlank()
+                            )
+                        }
 
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Descripción (opcional)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    minLines = 2
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { isObligatory = !isObligatory }
-                        .padding(vertical = 4.dp)
-                ) {
-                    Checkbox(checked = isObligatory, onCheckedChange = { isObligatory = it })
-                    Text("Es Curso Obligatorio", style = MaterialTheme.typography.bodyLarge)
-                }
-
-                Divider()
-                Text("Requisitos", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                
-                if (availablePrerequisites.isNotEmpty()) {
-                    Column {
-                        availablePrerequisites.forEach { prereq ->
-                            val isSelected = selectedPrereqs.contains(prereq.tempId)
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        if (isSelected) selectedPrereqs.remove(prereq.tempId)
-                                        else selectedPrereqs.add(prereq.tempId)
+                        // Academic Level Selector
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Nivel Académico", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                            val levels = listOf("Diplomado", "Bachillerato", "Licenciatura", "Maestría", "Doctorado")
+                            
+                            // Re-implementing FlowRow behavior manually or using a Box with wrapping if needed,
+                            // but for simplicity and since we don't have ExperimentalLayoutApi working well,
+                            // I'll use a simple Row with scroll or just a Column of Rows.
+                            // Actually, I'll use a simple Row for now or just a few small Rows.
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    levels.take(3).forEach { level ->
+                                        FilterChip(
+                                            selected = academicLevel == level,
+                                            onClick = { academicLevel = level },
+                                            label = { Text(level) },
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
                                     }
-                                    .padding(vertical = 8.dp)
-                            ) {
-                                Checkbox(checked = isSelected, onCheckedChange = null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(prereq.name, style = MaterialTheme.typography.bodyMedium)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    levels.drop(3).forEach { level ->
+                                        FilterChip(
+                                            selected = academicLevel == level,
+                                            onClick = { academicLevel = level },
+                                            label = { Text(level) },
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        OutlinedTextField(
+                            value = description,
+                            onValueChange = { description = it },
+                            label = { Text("Descripción (opcional)") },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            minLines = 2
+                        )
+
+                        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+                        // PREREQUISITES
+                        RequirementSearchList(
+                            title = "Pre-requisitos",
+                            searchQuery = prereqSearch,
+                            onSearchChange = { prereqSearch = it },
+                            items = filteredPrereqs,
+                            selectedIds = selectedPrereqs,
+                            onToggle = { id ->
+                                if (selectedPrereqs.contains(id)) selectedPrereqs.remove(id)
+                                else selectedPrereqs.add(id)
+                            }
+                        )
+
+                        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+                        // COREQUISITES
+                        RequirementSearchList(
+                            title = "Co-requisitos",
+                            searchQuery = coreqSearch,
+                            onSearchChange = { coreqSearch = it },
+                            items = filteredCoreqs,
+                            selectedIds = selectedCoreqs,
+                            onToggle = { id ->
+                                if (selectedCoreqs.contains(id)) selectedCoreqs.remove(id)
+                                else selectedCoreqs.add(id)
+                            }
+                        )
+                    }
+
+                    // Fixed Footer
+                                    Surface(
+                                        tonalElevation = 2.dp,
+                                        shadowElevation = 8.dp,
+                                        color = MaterialTheme.colorScheme.surface
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 24.dp, vertical = 16.dp),
+                                            horizontalArrangement = Arrangement.End,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {                            OutlinedButton(
+                                onClick = onDismiss,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.height(48.dp).weight(1f)
+                            ) { 
+                                Text("Cancelar", fontWeight = FontWeight.Bold) 
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Button(
+                                onClick = { 
+                                    if (name.isBlank() || code.isBlank() || credits.isBlank()) {
+                                        showError = true
+                                    } else {
+                                        onSave(
+                                            LocalCourse(
+                                                tempId = initialCourse?.tempId ?: UUID.randomUUID().toString(),
+                                                name = name,
+                                                code = code,
+                                                credits = credits.toIntOrNull() ?: 0,
+                                                typeCourse = academicLevel,
+                                                description = description,
+                                                prerequisitesIds = selectedPrereqs.toList(),
+                                                corequisitesIds = selectedCoreqs.toList()
+                                            )
+                                        ) 
+                                    }
+                                },
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.height(48.dp).weight(1f)
+                            ) { 
+                                Text("Guardar", fontWeight = FontWeight.Bold) 
                             }
                         }
                     }
-                } else {
-                    Text(
-                        "No hay cursos disponibles como requisitos.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
                 }
+            }
+        }
+    }
+}
 
-                Spacer(modifier = Modifier.weight(1f))
+@Composable
+fun RequirementSearchList(
+    title: String,
+    searchQuery: String,
+    onSearchChange: (String) -> Unit,
+    items: List<LocalCourse>,
+    selectedIds: List<String>,
+    onToggle: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchChange,
+            placeholder = { Text("Buscar por nombre o código...") },
+            leadingIcon = { Icon(Icons.Default.Search, null, modifier = Modifier.size(20.dp)) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            textStyle = MaterialTheme.typography.bodySmall,
+            colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
+        )
 
-                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedButton(
-                        onClick = onDismiss,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                        shape = RoundedCornerShape(12.dp)
-                    ) { 
-                        Text("Cancelar", fontWeight = FontWeight.Bold) 
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Button(
-                        onClick = { 
-                            if (name.isBlank() || code.isBlank() || credits.isBlank()) {
-                                showError = true
-                            } else {
-                                onSave(
-                                    LocalCourse(
-                                        tempId = initialCourse?.tempId ?: UUID.randomUUID().toString(),
-                                        name = name,
-                                        code = code,
-                                        credits = credits.toIntOrNull() ?: 0,
-                                        isObligatory = isObligatory,
-                                        description = description,
-                                        prerequisitesIds = selectedPrereqs.toList()
-                                    )
-                                ) 
-                            }
-                        },
-                        shape = RoundedCornerShape(12.dp)
-                    ) { 
-                        Text("Guardar") 
+        if (items.isEmpty()) {
+            Text("No se encontraron cursos disponibles.", style = MaterialTheme.typography.bodySmall, color = Color.Gray, modifier = Modifier.padding(vertical = 8.dp))
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                items.forEach { course ->
+                    val isSelected = selectedIds.contains(course.tempId)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) else Color.Transparent)
+                            .clickable { onToggle(course.tempId) }
+                            .padding(8.dp)
+                    ) {
+                        Checkbox(
+                            checked = isSelected,
+                            onCheckedChange = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(course.name, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                            Text(course.code, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                        }
                     }
                 }
             }

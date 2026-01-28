@@ -19,11 +19,11 @@ data class CourseDto(
     val dscName: String,
     val dscLevel: String,
     val dscPeriod: String,
-    val typeCourse: String, // OBLIGATORY, ELECTIVE
+    val typeCourse: String, // Diplomado, Bachillerato, Licenciatura, etc.
     val numCredits: Int,
-    val requirement: Boolean,
     val description: String? = null,
-    val prerequisites: List<String>? = null
+    val prerequisites: List<String>? = null,
+    val corequisites: List<String>? = null
 )
 
 data class AiExtractionResponse(

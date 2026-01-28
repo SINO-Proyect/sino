@@ -146,4 +146,43 @@ class StudyPlanRepository(private val tokenManager: TokenManager? = null) {
             Resource.Error(e.message ?: "Error updating course")
         }
     }
+
+    suspend fun getStudentCourses(userId: Int): Resource<List<StudentCourseDto>> {
+        return try {
+            val response = api.getStudentCourses(userId)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Resource.Success(response.body()!!.data ?: emptyList())
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error fetching student courses")
+        }
+    }
+
+    suspend fun updateStudentCourse(data: StudentCourseDto): Resource<StudentCourseDto> {
+        return try {
+            val response = api.updateStudentCourse(data)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Resource.Success(response.body()!!.data!!)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error updating student course")
+        }
+    }
+
+    suspend fun initializeStudentPlan(userId: Int, planId: Int): Resource<Boolean> {
+        return try {
+            val response = api.initializeStudentPlan(userId, planId)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Resource.Success(true)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error initializing plan")
+        }
+    }
 }

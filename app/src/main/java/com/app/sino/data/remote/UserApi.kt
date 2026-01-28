@@ -20,4 +20,7 @@ interface UserApi {
 
     @PUT("api/users/{id}")
     suspend fun updateUser(@Path("id") id: Int, @Body user: UserDto): Response<ApiResponse<UserDto>>
+
+    @POST("api/users/{id}/last-login")
+    suspend fun updateLastLogin(@Path("id") id: Int): Response<ApiResponse<Unit>>
 }

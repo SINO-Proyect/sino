@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import com.app.sino.ui.RootScreen
 import com.app.sino.ui.theme.SINOTheme
+import com.app.sino.data.remote.RetrofitClient
 import com.app.sino.utils.NotificationScheduler
 import android.Manifest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +32,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        RetrofitClient.initialize(applicationContext)
         enableEdgeToEdge()
 
         // Create notification channel

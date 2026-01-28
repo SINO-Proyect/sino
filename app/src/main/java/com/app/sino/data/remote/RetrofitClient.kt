@@ -1,5 +1,7 @@
 package com.app.sino.data.remote
 
+import android.content.Context
+import com.app.sino.data.local.TokenManager
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonPrimitive
@@ -16,7 +18,12 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    private const val BASE_URL = "http://10.145.143.212:8080/api/"
+    private const val BASE_URL = "http://192.168.0.150:8080/"
+    private var authInterceptor: AuthInterceptor? = null
+
+    fun initialize(context: Context) {
+        authInterceptor = AuthInterceptor(TokenManager(context))
+    }
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -51,6 +58,14 @@ object RetrofitClient {
 
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
+        .addInterceptor { chain ->
+            val interceptor = authInterceptor
+            if (interceptor != null) {
+                interceptor.intercept(chain)
+            } else {
+                chain.proceed(chain.request())
+            }
+        }
         .connectTimeout(300, TimeUnit.SECONDS)
         .readTimeout(300, TimeUnit.SECONDS)
         .writeTimeout(300, TimeUnit.SECONDS)

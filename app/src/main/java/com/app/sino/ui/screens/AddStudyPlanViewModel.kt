@@ -23,6 +23,8 @@ import java.util.UUID
 
 data class LocalCycle(
     val id: String = UUID.randomUUID().toString(),
+    val degree: String,
+    val number: String,
     val name: String,
     val courses: List<LocalCourse> = emptyList()
 )
@@ -32,7 +34,7 @@ data class LocalCourse(
     val name: String,
     val code: String,
     val credits: Int,
-    val isObligatory: Boolean = true,
+    val typeCourse: String = "Bachillerato", // Diplomado, Bachillerato, Licenciatura, etc.
     val prerequisitesIds: List<String> = emptyList(),
     val corequisitesIds: List<String> = emptyList(),
     val description: String = ""
@@ -52,7 +54,7 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
     var selectedUniversityId = MutableStateFlow<Int?>(null)
     var planName = MutableStateFlow("")
     var careerName = MutableStateFlow("")
-    var yearLevel = MutableStateFlow("")
+    var yearLevel = MutableStateFlow(java.util.Calendar.getInstance().get(java.util.Calendar.YEAR).toString())
     var periodType = MutableStateFlow("Semestre")
 
     private val _cycles = MutableStateFlow<List<LocalCycle>>(emptyList())
@@ -112,7 +114,7 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
 
     fun addCycle(degree: String, number: String) {
         val cycleName = "$degree $number ${periodType.value}"
-        _cycles.update { it + LocalCycle(name = cycleName) }
+        _cycles.update { it + LocalCycle(degree = degree, number = number, name = cycleName) }
     }
 
     fun removeCycle(cycleId: String) {
@@ -128,12 +130,9 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
     fun updatePeriodType(newType: String) {
         periodType.value = newType
         _cycles.update { list ->
-            list.mapIndexed { index, cycle ->
-                if (cycle.name.contains("Semestre") || cycle.name.contains("Cuatrimestre") || cycle.name.contains("Trimestre") || cycle.name.contains("Ciclo")) {
-                    cycle.copy(name = "${index + 1} $newType")
-                } else {
-                    cycle
-                }
+            list.map { cycle ->
+                val newName = "${cycle.degree} ${cycle.number} $newType"
+                cycle.copy(name = newName)
             }
         }
     }
@@ -264,13 +263,13 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
                     CourseDto(
                         dscCode = local.code,
                         dscName = local.name,
-                        dscLevel = cycle.name,
-                        dscPeriod = cycle.name,
-                        typeCourse = if (local.isObligatory) "OBLIGATORY" else "ELECTIVE",
+                        dscLevel = cycle.degree,
+                        dscPeriod = cycle.number,
+                        typeCourse = local.typeCourse,
                         numCredits = local.credits,
-                        requirement = local.prerequisitesIds.isNotEmpty(),
                         description = local.description,
-                        prerequisites = local.prerequisitesIds.mapNotNull { idToCodeMap[it] }
+                        prerequisites = local.prerequisitesIds.mapNotNull { idToCodeMap[it] },
+                        corequisites = local.corequisitesIds.mapNotNull { idToCodeMap[it] }
                     )
                 }
             }

@@ -18,7 +18,9 @@ class UserRepository(
             if (user.firebaseUid != null) {
                 val response = api.getUserByFirebaseUid(user.firebaseUid)
                 if (response.isSuccessful && response.body()?.data != null) {
-                    emit(Resource.Success(response.body()!!.data!!))
+                    val syncedUser = response.body()!!.data!!
+                    syncedUser.idUser?.let { api.updateLastLogin(it) } // Update last login
+                    emit(Resource.Success(syncedUser))
                     return@flow
                 }
             }
@@ -27,6 +29,7 @@ class UserRepository(
             val emailResponse = api.getUserByEmail(user.email)
             if (emailResponse.isSuccessful && emailResponse.body()?.data != null) {
                 var existingUser = emailResponse.body()!!.data!!
+                existingUser.idUser?.let { api.updateLastLogin(it) } // Update last login
                 var needsUpdate = false
 
                 // If found by email, update UID if different
@@ -61,7 +64,9 @@ class UserRepository(
                 // Not found by UID or Email -> Create
                 val createResponse = api.createUser(user)
                 if (createResponse.isSuccessful && createResponse.body()?.data != null) {
-                    emit(Resource.Success(createResponse.body()!!.data!!))
+                    val newUser = createResponse.body()!!.data!!
+                    newUser.idUser?.let { api.updateLastLogin(it) } // Update last login
+                    emit(Resource.Success(newUser))
                 } else {
                     emit(Resource.Error(createResponse.message() ?: "Failed to sync user"))
                 }
