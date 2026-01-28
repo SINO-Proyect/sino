@@ -18,6 +18,8 @@ lifecycleViewmodelCompose = "2.8.6"
 zxing = "4.3.0"
 identityJvm = "202411.1"
 material3 = "1.4.0"
+compose-calendar = "1.4.0"
+desugarJdkLibs = "2.0.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,11 +53,16 @@ androidx-security-crypto = { group = "androidx.security", name = "security-crypt
 # ViewModel
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 
+# Desugaring
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+
 # QR Generation
 zxing-android-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing" }
 zxing-core = { group = "com.google.zxing", name = "core", version = "3.5.3" }
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+compose-calendar = { group = "io.github.boguszpawlowski.composecalendar", name = "composecalendar", version.ref = "compose-calendar" }
+compose-calendar-kotlinx = { group = "io.github.boguszpawlowski.composecalendar", name = "kotlinx-datetime", version.ref = "compose-calendar" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
