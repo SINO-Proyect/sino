@@ -1,16 +1,11 @@
 package com.app.sino.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,90 +21,51 @@ import com.app.sino.R
 import com.app.sino.ui.model.BadgePalette
 import com.app.sino.ui.model.CourseStatus
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CourseBadge(
     courseName: String,
     courseCode: String,
     status: CourseStatus,
     palette: BadgePalette,
-    requirementsCount: Int = 0,
+    prerequisitesCodes: List<String> = emptyList(),
     modifier: Modifier = Modifier
 ) {
-    val badgeSize = 112.dp
-    val mainCircleSize = 80.dp
-
-    val contentAlpha = when (status) {
-        CourseStatus.PASSED -> 0.5f
-        CourseStatus.LOCKED -> 0.6f
-        CourseStatus.AVAILABLE -> 1.0f
-        else -> 1.0f
-    }
+    val badgeSize = 110.dp
+    val mainCircleSize = 76.dp
 
     val isProgress = status == CourseStatus.IN_PROGRESS
     val isLocked = status == CourseStatus.LOCKED
     val isPassed = status == CourseStatus.PASSED
     val isAvailable = status == CourseStatus.AVAILABLE
 
-    val mainCircleColor = when {
-        isLocked || isAvailable -> palette.main
-        isPassed -> palette.sub2
-        else -> palette.main
+    // Colors derived from the specific palette for this period/level
+    val baseColor = if (isLocked) Color(0xFF64748B) else palette.main
+    val statusColor = when {
+        isPassed -> Color(0xFF10B981) // Consistent Emerald for Passed
+        isProgress -> palette.main
+        isAvailable -> palette.main.copy(alpha = 0.8f)
+        else -> baseColor
     }
-
-    val shadowColor = when {
-        isLocked || isAvailable -> palette.sub1
-        isPassed -> palette.sub3
-        else -> palette.sub1
-    }
-    
-    val mainIconColor = when {
-        isProgress || isPassed -> palette.sub4
-        isLocked || isAvailable -> palette.sub4
-        else -> Color.White
-    }
-    
-    val idBadgeBgColor = when {
-        isProgress || isPassed -> palette.sub4
-        isLocked || isAvailable -> palette.sub4
-        else -> palette.main.copy(alpha = 0.3f)
-    }
-    val idBadgeTextColor = when {
-        isProgress || isPassed -> palette.sub2
-        isLocked || isAvailable -> palette.sub2
-        else -> Color.Black
-    }
-
-    val topDecorationBgColor = when {
-        isProgress || isPassed -> palette.sub4
-        isAvailable -> palette.sub4
-        else -> palette.main
-    }
-    val topDecorationIconColor = when {
-        isProgress || isPassed -> palette.sub2
-        isAvailable -> palette.sub2
-        else -> Color.White
-    }
-
-    val showTopDecoration = isProgress || isAvailable || isPassed
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxWidth()
-            .alpha(contentAlpha)
+            .padding(4.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.size(badgeSize)
         ) {
-            // Shadow
-            Box(
-                modifier = Modifier
-                    .offset(y = 7.dp)
-                    .size(mainCircleSize)
-                    .clip(CircleShape)
-                    .background(shadowColor)
-            )
+            // Glow effect for active states
+            if (!isLocked) {
+                Box(
+                    modifier = Modifier
+                        .size(mainCircleSize + 8.dp)
+                        .background(statusColor.copy(alpha = 0.1f), CircleShape)
+                )
+            }
 
             // Main Circle
             Box(
@@ -117,119 +73,82 @@ fun CourseBadge(
                 modifier = Modifier
                     .size(mainCircleSize)
                     .clip(CircleShape)
-                    .background(mainCircleColor)
+                    .background(if (isLocked) Color(0xFF0F172A) else Color(0xFF020617))
+                    .border(
+                        width = 1.dp,
+                        color = statusColor.copy(alpha = 0.5f),
+                        shape = CircleShape
+                    )
             ) {
-                if (isLocked) {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        tint = mainIconColor,
-                        modifier = Modifier.size(34.dp)
-                    )
-                } else {
-                     Icon(
-                        painter = painterResource(id = R.drawable.book_open_duotone),
-                        contentDescription = null,
-                        tint = mainIconColor,
-                        modifier = Modifier.size(34.dp)
-                    )
-                }
+                Icon(
+                    painter = painterResource(
+                        id = when {
+                            isLocked -> R.drawable.lock
+                            isAvailable -> R.drawable.lock_open
+                            isPassed -> R.drawable.check
+                            else -> R.drawable.book_open_duotone
+                        }
+                    ),
+                    contentDescription = null,
+                    tint = statusColor,
+                    modifier = Modifier.size(28.dp)
+                )
             }
 
-            // Top Decoration
-            if (showTopDecoration) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .offset(y = 2.dp)
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(topDecorationBgColor)
-                ) {
-                    if (isProgress) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_path_filled), // Using path/book icon for progress
-                            contentDescription = null,
-                            tint = topDecorationIconColor,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    } else if (isAvailable) {
-                        Icon(
-                            imageVector = Icons.Default.LockOpen,
-                            contentDescription = null,
-                            tint = topDecorationIconColor,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    } else if (isPassed) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            tint = topDecorationIconColor,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-
-            // Bottom Pill (Course Code)
-            Box(
+            // Code Label (Glassmorphism effect)
+            Surface(
+                color = statusColor.copy(alpha = 0.9f),
+                shape = RoundedCornerShape(50),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .offset(y = (-2).dp)
-                    .background(
-                        color = idBadgeBgColor,
-                        shape = RoundedCornerShape(percent = 50)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = courseCode,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 10.sp
-                    ),
-                    color = idBadgeTextColor
+                        fontWeight = FontWeight.Black,
+                        fontSize = 8.sp,
+                        color = Color.White
+                    )
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = courseName,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = Color.White,
+            text = courseName.uppercase(),
+            style = MaterialTheme.typography.labelSmall.copy(
+                lineHeight = 12.sp,
+                fontWeight = FontWeight.Black,
+                textAlign = TextAlign.Center,
+                letterSpacing = 0.5.sp
+            ),
+            color = if (isLocked) Color.Gray else Color.White,
             maxLines = 2,
-            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.width(100.dp)
         )
 
-        if (isLocked && requirementsCount > 0) {
-            Spacer(modifier = Modifier.height(4.dp))
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = palette.sub2,
-                        shape = RoundedCornerShape(percent = 50)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+        if (isLocked && prerequisitesCodes.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(6.dp))
+            androidx.compose.foundation.layout.FlowRow(
+                horizontalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.width(110.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_path_outline),
-                        contentDescription = null,
-                        tint = palette.sub4,
-                        modifier = Modifier.size(10.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    
-                    Text(
-                        text = "$requirementsCount Req",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                        color = Color.White
-                    )
+                prerequisitesCodes.forEach { code ->
+                    Surface(
+                        color = Color(0xFFEF4444).copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(4.dp),
+                        border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFEF4444).copy(alpha = 0.3f))
+                    ) {
+                        Text(
+                            text = code,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 7.sp, color = Color(0xFFF87171), fontWeight = FontWeight.Bold)
+                        )
+                    }
                 }
             }
         }

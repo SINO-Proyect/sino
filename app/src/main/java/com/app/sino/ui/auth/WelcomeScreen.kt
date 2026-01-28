@@ -1,8 +1,9 @@
 package com.app.sino.ui.auth
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,10 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,15 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.sino.R
 import com.app.sino.ui.components.SinoButton
-import com.app.sino.ui.components.SinoScreenWrapper
-import com.app.sino.ui.theme.Dimens
-import com.app.sino.ui.theme.SinoBlack
-import com.app.sino.ui.theme.SinoWhite
 
 @Composable
 fun WelcomeScreen(
@@ -41,14 +36,18 @@ fun WelcomeScreen(
     onSignUpClick: () -> Unit,
     onGoogleClick: () -> Unit
 ) {
-    SinoScreenWrapper(backgroundImageRes = R.drawable.bg_1) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(Dimens.PaddingLarge)
+                .padding(32.dp)
         ) {
-            // Top Section
-            Spacer(modifier = Modifier.height(100.dp))
+            // Top Section (Branding)
+            Spacer(modifier = Modifier.height(80.dp))
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -56,69 +55,63 @@ fun WelcomeScreen(
                 Image(
                     painter = painterResource(id = R.drawable.sino_logo),
                     contentDescription = "SINO Logo",
-                    modifier = Modifier.width(245.dp),
+                    modifier = Modifier.width(180.dp),
                     contentScale = androidx.compose.ui.layout.ContentScale.FillWidth,
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(SinoWhite)
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Your academic journey",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = SinoWhite.copy(alpha = 0.8f),
+                    text = "Simplifica tu camino académico",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = (-0.5).sp
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Footer Section
+            // Action Buttons
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
                 SinoButton(
-                    text = "Log In",
-                    onClick = onLoginClick,
-                    containerColor = SinoBlack,
-                    contentColor = SinoWhite
-                )
-                
-                Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
-
-                Text(
-                    text = "or",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp
-                    ),
-                    color = SinoWhite.copy(alpha = 0.6f)
+                    text = "Iniciar Sesión",
+                    onClick = onLoginClick
                 )
 
-                Spacer(modifier = Modifier.height(Dimens.PaddingMedium))
-
                 SinoButton(
-                    text = "Create Account",
+                    text = "Crear Cuenta",
                     onClick = onSignUpClick,
-                    isOutlined = true,
-                    contentColor = SinoWhite,
-                    borderColor = SinoWhite
+                    isOutlined = true
                 )
 
-                Spacer(modifier = Modifier.height(12.dp)) 
+                Row(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)))
+                    Text(
+                        text = "o continúa con",
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Box(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)))
+                }
 
-                Button(
+                Surface(
                     onClick = onGoogleClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(Dimens.ButtonHeight),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = SinoWhite,
-                        contentColor = SinoBlack
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(0.dp),
-                    shape = RoundedCornerShape(Dimens.ButtonCornerRadius)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    shadowElevation = 1.dp
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -127,19 +120,20 @@ fun WelcomeScreen(
                         Icon(
                             painter = painterResource(id = R.drawable.google_icon_logo),
                             contentDescription = "Google Logo",
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(20.dp),
                             tint = Color.Unspecified 
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = "Continue with Google",
+                            text = "Google",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(Dimens.PaddingExtraLarge))
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

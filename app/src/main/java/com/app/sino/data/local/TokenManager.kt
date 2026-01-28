@@ -42,6 +42,14 @@ class TokenManager(context: Context) {
         return sharedPreferences.getString("user_email", null)
     }
 
+    fun saveUserId(userId: Int) {
+        sharedPreferences.edit().putInt("user_id", userId).apply()
+    }
+
+    fun getUserId(): Int {
+        return sharedPreferences.getInt("user_id", -1)
+    }
+
     fun saveEmailVerified(isVerified: Boolean) {
         sharedPreferences.edit().putBoolean("email_verified", isVerified).apply()
     }

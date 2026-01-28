@@ -11,30 +11,37 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+
 private val DarkColorScheme = darkColorScheme(
-    primary = SinoWhite,
-    onPrimary = SinoBlack,
-    secondary = SinoMediumGrey,
-    onSecondary = SinoWhite,
-    tertiary = SinoLightGrey,
+    primary = SinoPrimary,
+    onPrimary = SinoWhite,
+    secondary = SinoPrimaryLight,
+    onSecondary = SinoBlack,
+    tertiary = SinoSurfaceVariant,
     background = SinoBackground,
-    onBackground = SinoWhite,
-    surface = SinoBlack,
-    onSurface = SinoWhite,
-    onSurfaceVariant = SinoLightGrey
+    onBackground = SinoTextPrimary,
+    surface = SinoSurface,
+    onSurface = SinoTextPrimary,
+    surfaceVariant = SinoSurfaceVariant,
+    onSurfaceVariant = SinoTextSecondary,
+    outline = GlassBorder
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = SinoBlack,
+    primary = SinoPrimaryDark,
     onPrimary = SinoWhite,
-    secondary = SinoMediumGrey,
+    secondary = SinoPrimary,
     onSecondary = SinoWhite,
-    tertiary = SinoLightGrey,
-    background = SinoWhite,
-    onBackground = SinoBlack,
-    surface = SinoWhite,
-    onSurface = SinoBlack,
-    onSurfaceVariant = SinoMediumGrey
+    tertiary = SinoSurface,
+    background = Color(0xFFF9FAFB),
+    onBackground = Color(0xFF111827),
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF111827),
+    surfaceVariant = Color(0xFFF3F4F6),
+    onSurfaceVariant = Color(0xFF4B5563),
+    outline = Color(0xFFE5E7EB)
 )
 
 @Composable

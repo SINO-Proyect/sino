@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.app.sino.ui.navigation.Screen
+import com.app.sino.ui.theme.SinoPrimary
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -37,28 +38,26 @@ fun BottomNavigationBar(navController: NavController) {
         Screen.Profile
     )
 
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(0.5.dp)
-                .background(Color.White.copy(alpha = 0.1f))
-        )
-        
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 0.dp,
-            modifier = Modifier.fillMaxWidth()
-        ) {
+    Surface(
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+        tonalElevation = 0.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(0.5.dp)
+                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+            )
+            
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 NavigationBar(
-                    modifier = Modifier
-                        .widthIn(max = 600.dp)
-                        .padding(horizontal = 16.dp),
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier.widthIn(max = 600.dp),
+                    containerColor = Color.Transparent,
                     tonalElevation = 0.dp,
                     windowInsets = WindowInsets(0, 0, 0, 0)
                 ) {
@@ -72,7 +71,7 @@ fun BottomNavigationBar(navController: NavController) {
                                 Icon(
                                     painter = painterResource(id = if (isSelected) screen.iconFilled else screen.iconOutline),
                                     contentDescription = screen.title,
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(24.dp)
                                 )
                             },
                             selected = isSelected,
@@ -89,8 +88,8 @@ fun BottomNavigationBar(navController: NavController) {
                             alwaysShowLabel = false,
                             colors = NavigationBarItemDefaults.colors(
                                 indicatorColor = Color.Transparent,
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                selectedIconColor = SinoPrimary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                             )
                         )
                     }

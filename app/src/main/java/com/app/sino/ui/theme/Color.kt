@@ -2,24 +2,28 @@ package com.app.sino.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val SinoBlack = Color(0xFF050505) // Ultra dark for footer/headers
-val SinoBackground = Color(0xFF0D0D0D) // Deep gray for general background
+// Premium Dark Palette (Apple Style)
+val SinoBlack = Color(0xFF000000) // For deepest elements
+val SinoBackground = Color(0xFF09090B) // Onyx Black for main background
+val SinoSurface = Color(0xFF18181B) // Zinc 900 for cards/surfaces
+val SinoSurfaceVariant = Color(0xFF27272A) // Zinc 800 for lighter surfaces
 val SinoWhite = Color(0xFFFFFFFF)
-val SinoGreen = Color(0xFFEEE8FF)
-val SinoDarkGrey = Color(0xFF131313)
-val SinoMediumGrey = Color(0xFF434343)
-val SinoLightGrey = Color(0xFFD3D3D3)
+val SinoTextPrimary = Color(0xFFFAFAFA)
+val SinoTextSecondary = Color(0xFFA1A1AA)
 
-// Gradients
-val GradientDarkStart = Color(0xFF434343)
-val GradientDarkEnd = Color(0xFF1C1C1C)
-val GradientBlackStart = Color(0xFF1A1A1A)
-val GradientBlackEnd = Color(0xFF000000)
+// Primary Brand Color
+val SinoPrimary = Color(0xFF8B5CF6) // Modern Violet
+val SinoPrimaryLight = Color(0xFFC4B5FD)
+val SinoPrimaryDark = Color(0xFF6D28D9)
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Functional Colors
+val SinoSuccess = Color(0xFF10B981)
+val SinoError = Color(0xFFEF4444)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Gradients for that 'Pro' feel
+val PremiumGradientStart = Color(0xFF8B5CF6)
+val PremiumGradientEnd = Color(0xFF6D28D9)
+
+// Transparencies for Glassmorphism
+val GlassBackground = Color(0xCC09090B)
+val GlassBorder = Color(0x1AFFFFFF)

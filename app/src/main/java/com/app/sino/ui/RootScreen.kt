@@ -42,10 +42,10 @@ fun RootScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(SinoBlack),
+                .background(androidx.compose.material3.MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator(color = SinoWhite)
+            CircularProgressIndicator(color = com.app.sino.ui.theme.SinoPrimary)
         }
     } else {
 
@@ -101,11 +101,7 @@ fun RootScreen(
                 }
                 composable(AuthScreen.ForgotPassword.route) {
                     ForgotPasswordScreen(
-                        onResetClick = {
-                            navController.navigate(AuthScreen.Login.route) {
-                                popUpTo(AuthScreen.Login.route) { inclusive = true }
-                            }
-                        },
+                        onBackClick = { navController.popBackStack() },
                         viewModel = viewModel
                     )
                 }

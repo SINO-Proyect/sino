@@ -18,24 +18,23 @@ data class BadgePalette(
 )
 
 object PathTheme {
-    val rainbowColors = listOf(
-        BadgePalette(Color(0xFFE35D5B), Color(0xFF9E2A29), Color(0xFF7A1817), Color(0xFF520B0A), Color(0xFFF5C8C7)),
-        BadgePalette(Color(0xFFF38B28), Color(0xFFB96F00), Color(0xFF915700), Color(0xFF613A00), Color(0xFFF8C890)),
-        BadgePalette(Color(0xFFEBC347), Color(0xFF9C7D1A), Color(0xFF755D10), Color(0xFF4D3D08), Color(0xFFFBEFB9)),
-        BadgePalette(Color(0xFF32A94D), Color(0xFF18682B), Color(0xFF1B5626), Color(0xFF0B3816), Color(0xFFB2DCA9)),
-        BadgePalette(Color(0xFF4581BF), Color(0xFF275A8E), Color(0xFF164478), Color(0xFF072751), Color(0xFF9FD0EC)),
-        BadgePalette(Color(0xFF874A97), Color(0xFF572E62), Color(0xFF531C5A), Color(0xFF360F3D), Color(0xFFC59CDB))
+    val accentColors = listOf(
+        BadgePalette(Color(0xFF6366F1), Color(0xFF4F46E5), Color(0xFF4338CA), Color(0xFF3730A3), Color(0xFFE0E7FF)), // Indigo
+        BadgePalette(Color(0xFF06B6D4), Color(0xFF0891B2), Color(0xFF0E7490), Color(0xFF155E75), Color(0xFFCFFAFE)), // Cyan
+        BadgePalette(Color(0xFF10B981), Color(0xFF059669), Color(0xFF047857), Color(0xFF065F46), Color(0xFFD1FAE5)), // Emerald
+        BadgePalette(Color(0xFFF59E0B), Color(0xFFD97706), Color(0xFFB45309), Color(0xFF92400E), Color(0xFFFEF3C7)), // Amber
+        BadgePalette(Color(0xFF8B5CF6), Color(0xFF7C3AED), Color(0xFF6D28D9), Color(0xFF5B21B6), Color(0xFFEDE9FE))  // Violet
     )
 
     val grayPalette = BadgePalette(
-        main = Color(0xFF4A5B64),
-        sub1 = Color(0xFF3A474D),
-        sub2 = Color(0xFF424242),
-        sub3 = Color(0xFF212121),
-        sub4 = Color(0xFFD3D3D3)
+        main = Color(0xFF334155),
+        sub1 = Color(0xFF1E293B),
+        sub2 = Color(0xFF0F172A),
+        sub3 = Color(0xFF020617),
+        sub4 = Color(0xFF94A3B8)
     )
 
     fun getBadgePalette(index: Int): BadgePalette {
-        return rainbowColors[index % rainbowColors.size]
+        return accentColors[index % accentColors.size]
     }
 }

@@ -9,7 +9,8 @@ import retrofit2.HttpException
 import java.io.IOException
 
 class UserRepository(
-    private val api: UserApi
+    private val api: UserApi,
+    private val tokenManager: com.app.sino.data.local.TokenManager? = null
 ) {
     fun syncUser(user: UserDto): Flow<Resource<UserDto>> = flow {
         emit(Resource.Loading())
@@ -19,7 +20,10 @@ class UserRepository(
                 val response = api.getUserByFirebaseUid(user.firebaseUid)
                 if (response.isSuccessful && response.body()?.data != null) {
                     val syncedUser = response.body()!!.data!!
-                    syncedUser.idUser?.let { api.updateLastLogin(it) } // Update last login
+                    syncedUser.idUser?.let { 
+                        api.updateLastLogin(it) 
+                        tokenManager?.saveUserId(it)
+                    } // Update last login
                     emit(Resource.Success(syncedUser))
                     return@flow
                 }
@@ -29,7 +33,10 @@ class UserRepository(
             val emailResponse = api.getUserByEmail(user.email)
             if (emailResponse.isSuccessful && emailResponse.body()?.data != null) {
                 var existingUser = emailResponse.body()!!.data!!
-                existingUser.idUser?.let { api.updateLastLogin(it) } // Update last login
+                existingUser.idUser?.let { 
+                    api.updateLastLogin(it)
+                    tokenManager?.saveUserId(it)
+                } // Update last login
                 var needsUpdate = false
 
                 // If found by email, update UID if different
@@ -65,7 +72,10 @@ class UserRepository(
                 val createResponse = api.createUser(user)
                 if (createResponse.isSuccessful && createResponse.body()?.data != null) {
                     val newUser = createResponse.body()!!.data!!
-                    newUser.idUser?.let { api.updateLastLogin(it) } // Update last login
+                    newUser.idUser?.let { 
+                        api.updateLastLogin(it)
+                        tokenManager?.saveUserId(it)
+                    } // Update last login
                     emit(Resource.Success(newUser))
                 } else {
                     emit(Resource.Error(createResponse.message() ?: "Failed to sync user"))

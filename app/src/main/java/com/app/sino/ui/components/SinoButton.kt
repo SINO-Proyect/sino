@@ -1,7 +1,10 @@
 package com.app.sino.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,12 +14,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.app.sino.ui.theme.Dimens
-import com.app.sino.ui.theme.SinoBlack
+import com.app.sino.ui.theme.PremiumGradientEnd
+import com.app.sino.ui.theme.PremiumGradientStart
+import com.app.sino.ui.theme.SinoPrimary
 import com.app.sino.ui.theme.SinoWhite
 
 @Composable
@@ -25,9 +32,6 @@ fun SinoButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isOutlined: Boolean = false,
-    containerColor: Color = SinoBlack,
-    contentColor: Color = SinoWhite,
-    borderColor: Color = SinoBlack,
     enabled: Boolean = true
 ) {
     if (isOutlined) {
@@ -35,19 +39,23 @@ fun SinoButton(
             onClick = onClick,
             modifier = modifier
                 .fillMaxWidth()
-                .height(Dimens.ButtonHeight),
+                .height(56.dp),
             enabled = enabled,
             colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = contentColor,
-                disabledContentColor = Color.Gray
+                contentColor = MaterialTheme.colorScheme.primary,
+                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             ),
-            border = if (enabled) BorderStroke(1.dp, borderColor) else BorderStroke(1.dp, Color.LightGray),
-            shape = RoundedCornerShape(Dimens.ButtonCornerRadius)
+            border = BorderStroke(
+                width = 1.dp,
+                color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+            ),
+            shape = RoundedCornerShape(16.dp),
+            contentPadding = PaddingValues(horizontal = 24.dp)
         ) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
         }
     } else {
@@ -55,22 +63,37 @@ fun SinoButton(
             onClick = onClick,
             modifier = modifier
                 .fillMaxWidth()
-                .height(Dimens.ButtonHeight),
+                .height(56.dp)
+                .clip(RoundedCornerShape(16.dp)),
             enabled = enabled,
             colors = ButtonDefaults.buttonColors(
-                containerColor = containerColor,
-                contentColor = contentColor,
-                disabledContainerColor = Color.LightGray,
-                disabledContentColor = Color.DarkGray
+                containerColor = Color.Transparent, // We'll use the background brush
+                contentColor = SinoWhite,
+                disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             ),
-            elevation = ButtonDefaults.buttonElevation(0.dp),
-            shape = RoundedCornerShape(Dimens.ButtonCornerRadius)
+            contentPadding = PaddingValues(0.dp),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp, pressedElevation = 0.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        if (enabled) Brush.horizontalGradient(
+                            colors = listOf(PremiumGradientStart, PremiumGradientEnd)
+                        ) else Brush.horizontalGradient(
+                            colors = listOf(Color.Transparent, Color.Transparent)
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }

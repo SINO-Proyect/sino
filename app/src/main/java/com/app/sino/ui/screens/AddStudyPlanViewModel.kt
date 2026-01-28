@@ -12,6 +12,8 @@ import com.app.sino.data.remote.dto.StudyPlanDto
 import com.app.sino.data.remote.dto.UniversityDto
 import com.app.sino.data.repository.StudyPlanRepository
 import com.app.sino.data.util.Resource
+import com.app.sino.ui.util.romanToDecimal
+import com.app.sino.ui.util.toRoman
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -62,7 +64,7 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
 
     init {
         loadUniversities()
-        addCycle("I", "1")
+        addCycle("1", "1")
     }
 
     private fun loadUniversities() {
@@ -113,8 +115,19 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun addCycle(degree: String, number: String) {
-        val cycleName = "$degree $number ${periodType.value}"
-        _cycles.update { it + LocalCycle(degree = degree, number = number, name = cycleName) }
+        val romanDegree = if (degree.all { it.isDigit() }) degree.toInt().toRoman() else degree
+        
+        // Check for duplicates
+        if (_cycles.value.any { it.degree == romanDegree && it.number == number }) {
+            _uiState.value = AddPlanUiState.Error("Este periodo ya existe ($romanDegree - $number)")
+            return
+        }
+
+        val cycleName = "$romanDegree NIVEL - $number ${periodType.value}"
+        _cycles.update { list -> 
+            val newList = list + LocalCycle(degree = romanDegree, number = number, name = cycleName)
+            newList.sortedWith(compareBy({ it.degree.romanToDecimal() }, { it.number.toIntOrNull() ?: 0 }))
+        }
     }
 
     fun removeCycle(cycleId: String) {
@@ -131,7 +144,7 @@ class AddStudyPlanViewModel(application: Application) : AndroidViewModel(applica
         periodType.value = newType
         _cycles.update { list ->
             list.map { cycle ->
-                val newName = "${cycle.degree} ${cycle.number} $newType"
+                val newName = "${cycle.degree} NIVEL - ${cycle.number} $newType"
                 cycle.copy(name = newName)
             }
         }

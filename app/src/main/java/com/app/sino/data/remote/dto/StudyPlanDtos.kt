@@ -9,7 +9,8 @@ data class StudyPlanDto(
     val dscCareer: String,
     val typePeriod: String, // SEMESTER, TRIMESTER, ANNUAL
     val yearLevel: String,
-    val status: Boolean = true
+    val status: Boolean = true,
+    val idCreator: Int? = null
 )
 
 data class CourseDto(
