@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = SinoPrimary,
-    onPrimary = SinoWhite,
+    onPrimary = SinoBlack,
     secondary = SinoPrimaryLight,
     onSecondary = SinoBlack,
     tertiary = SinoSurfaceVariant,
@@ -29,32 +29,29 @@ private val DarkColorScheme = darkColorScheme(
     outline = GlassBorder
 )
 
+// Minimalist Apple Light Scheme (keeping it just in case, but favoring Dark)
 private val LightColorScheme = lightColorScheme(
     primary = SinoPrimaryDark,
     onPrimary = SinoWhite,
     secondary = SinoPrimary,
     onSecondary = SinoWhite,
     tertiary = SinoSurface,
-    background = Color(0xFFF9FAFB),
-    onBackground = Color(0xFF111827),
+    background = Color(0xFFF2F2F7), // Apple System Gray 6
+    onBackground = Color(0xFF1C1C1E),
     surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF111827),
-    surfaceVariant = Color(0xFFF3F4F6),
-    onSurfaceVariant = Color(0xFF4B5563),
-    outline = Color(0xFFE5E7EB)
+    onSurface = Color(0xFF1C1C1E),
+    surfaceVariant = Color(0xFFE5E5EA),
+    onSurfaceVariant = Color(0xFF3A3A3C),
+    outline = Color(0xFFD1D1D6)
 )
 
 @Composable
 fun SINOTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Disabled for strictly B&W
+    darkTheme: Boolean = true, // Force dark theme by default for that 'Premium' feel
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        // dynamicColor check removed to force our theme
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
@@ -170,41 +171,45 @@ fun CourseActionDialog(
     
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF121416)),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            shape = RoundedCornerShape(32.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF0A0A0A)),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Surface(
-                    color = Color(0xFF50C878).copy(alpha = 0.1f),
-                    shape = CircleShape,
-                    modifier = Modifier.size(56.dp)
+                // Header with subtle gradient/glow
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(Color(0xFF34C759).copy(alpha = 0.1f), CircleShape)
+                        .border(1.dp, Color(0xFF34C759).copy(alpha = 0.2f), CircleShape)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.book_open_duotone),
                         contentDescription = null,
-                        tint = Color(0xFF50C878),
-                        modifier = Modifier.padding(14.dp)
+                        tint = Color(0xFF34C759),
+                        modifier = Modifier.size(30.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
                     item.course.dscName.uppercase(), 
-                    style = MaterialTheme.typography.titleLarge, 
-                    fontWeight = FontWeight.Black, 
+                    style = MaterialTheme.typography.titleMedium, 
+                    fontWeight = FontWeight.Bold, 
                     color = Color.White,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    letterSpacing = 0.5.sp
                 )
                 Text(
                     "CÓDIGO: ${item.course.dscCode}", 
-                    style = MaterialTheme.typography.labelMedium, 
-                    color = Color.Gray,
+                    style = MaterialTheme.typography.labelSmall, 
+                    color = Color.White.copy(alpha = 0.5f),
                     letterSpacing = 1.sp
                 )
 
@@ -214,7 +219,7 @@ fun CourseActionDialog(
                     StatusWarning("MATERIA BLOQUEADA\nAprueba los requisitos para habilitarla.")
                     if (!item.course.prerequisites.isNullOrEmpty()) {
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text("REQUISITOS FALTANTES:", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("REQUISITOS FALTANTES:", color = Color.White.copy(alpha = 0.4f), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(8.dp))
                         androidx.compose.foundation.layout.FlowRow(
                             horizontalArrangement = Arrangement.Center,
@@ -222,11 +227,11 @@ fun CourseActionDialog(
                         ) {
                             item.course.prerequisites!!.forEach { req ->
                                 Surface(
-                                    color = Color(0xFFEF5350).copy(alpha = 0.1f),
-                                    shape = RoundedCornerShape(4.dp),
-                                    border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFEF5350).copy(alpha = 0.3f))
+                                    color = Color(0xFFFF453A).copy(alpha = 0.1f),
+                                    shape = RoundedCornerShape(8.dp),
+                                    border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFFF453A).copy(alpha = 0.3f))
                                 ) {
-                                    Text(text = req, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), color = Color(0xFFEF5350), fontSize = 10.sp)
+                                    Text(text = req, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp), color = Color(0xFFFF453A), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -235,7 +240,7 @@ fun CourseActionDialog(
                     if (statusId != 4) {
                         HoldToConfirmButton(
                             text = "MANTENER PARA GANAR",
-                            color = Color(0xFF2E7D32),
+                            color = Color(0xFF34C759),
                             onConfirmed = { onAction(4) }
                         )
                         
@@ -244,7 +249,7 @@ fun CourseActionDialog(
                         if (statusId != 2) {
                             HoldToConfirmButton(
                                 text = "MANTENER PARA CURSAR",
-                                color = Color(0xFF43A047),
+                                color = Color(0xFF32D74B),
                                 onConfirmed = { onAction(2) }
                             )
                         } else {
@@ -262,7 +267,7 @@ fun CourseActionDialog(
 
                 Spacer(modifier = Modifier.height(32.dp))
                 TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                    Text("CERRAR", color = Color.Gray, fontWeight = FontWeight.Bold)
+                    Text("CERRAR", color = Color.White.copy(alpha = 0.4f), fontWeight = FontWeight.Medium)
                 }
             }
         }
@@ -272,14 +277,14 @@ fun CourseActionDialog(
 @Composable
 fun StatusSuccess(message: String) {
     Surface(
-        color = Color(0xFF2E7D32).copy(alpha = 0.1f),
-        shape = RoundedCornerShape(12.dp),
+        color = Color(0xFF34C759).copy(alpha = 0.1f),
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-            Icon(painter = painterResource(id = R.drawable.check), contentDescription = null, tint = Color(0xFF2E7D32), modifier = Modifier.size(20.dp))
+        Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+            Icon(painter = painterResource(id = R.drawable.check), contentDescription = null, tint = Color(0xFF34C759), modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(12.dp))
-            Text(message, color = Color(0xFF2E7D32), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+            Text(message, color = Color(0xFF34C759), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -299,7 +304,7 @@ fun HoldToConfirmButton(
             val startTime = System.currentTimeMillis()
             while (isPressing && progress < 1f) {
                 val elapsed = System.currentTimeMillis() - startTime
-                progress = (elapsed / 1500f).coerceAtMost(1f)
+                progress = (elapsed / 1200f).coerceAtMost(1f) // Slightly faster feel
                 kotlinx.coroutines.delay(16)
             }
             if (progress >= 1f) {
@@ -316,9 +321,9 @@ fun HoldToConfirmButton(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(color.copy(alpha = 0.1f))
-            .border(1.dp, color.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
+            .background(color.copy(alpha = 0.08f))
+            .border(1.dp, color.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
             .pointerInput(Unit) {
                 detectTapGestures(
                     onPress = {
@@ -335,13 +340,13 @@ fun HoldToConfirmButton(
                 .fillMaxWidth(animatedProgress)
                 .fillMaxHeight()
                 .align(Alignment.CenterStart)
-                .background(color.copy(alpha = 0.4f))
+                .background(color.copy(alpha = 0.3f))
         )
         
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(painter = painterResource(id = R.drawable.check), contentDescription = null, tint = color)
+            Icon(painter = painterResource(id = R.drawable.check), contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text, color = color, fontWeight = FontWeight.Black, style = MaterialTheme.typography.labelLarge)
+            Text(text, color = color, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge, letterSpacing = 1.sp)
         }
     }
 }
@@ -353,14 +358,17 @@ fun ActionButton(
     color: Color,
     onClick: () -> Unit
 ) {
-    OutlinedButton(
+    Button(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth().height(56.dp),
-        shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.5f)),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = color)
+        modifier = Modifier.fillMaxWidth().height(64.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.White.copy(alpha = 0.05f),
+            contentColor = color
+        ),
+        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.1f))
     ) {
-        Icon(painter = painterResource(id = icon), contentDescription = null, modifier = Modifier.size(18.dp))
+        Icon(painter = painterResource(id = icon), contentDescription = null, modifier = Modifier.size(20.dp))
         Spacer(modifier = Modifier.width(12.dp))
         Text(text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
     }
@@ -369,14 +377,14 @@ fun ActionButton(
 @Composable
 fun StatusWarning(message: String) {
     Surface(
-        color = Color(0xFFEF5350).copy(alpha = 0.1f),
-        shape = RoundedCornerShape(12.dp),
+        color = Color(0xFFFF453A).copy(alpha = 0.08f),
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(painter = painterResource(id = R.drawable.lock), contentDescription = null, tint = Color(0xFFEF5350), modifier = Modifier.size(20.dp))
+        Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(painter = painterResource(id = R.drawable.lock), contentDescription = null, tint = Color(0xFFFF453A), modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(12.dp))
-            Text(message, color = Color(0xFFEF5350), style = MaterialTheme.typography.bodySmall)
+            Text(message, color = Color(0xFFFF453A), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
         }
     }
 }
@@ -415,32 +423,24 @@ fun LoadingCoursesView() {
 
 @Composable
 fun CycleHeader(periodName: String, index: Int) {
-    val palette = PathTheme.getBadgePalette(index)
-
     Box(
-        contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
+            .padding(top = 24.dp, bottom = 8.dp), // Padding reducido de 40/16 a 24/8
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .background(
-                    color = palette.main.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(50)
-                )
-                .border(
-                    width = 1.dp,
-                    color = palette.main.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(50)
-                )
-                .padding(horizontal = 20.dp, vertical = 4.dp)
+        Surface(
+            color = Color.White.copy(alpha = 0.03f), // Más sutil
+            shape = RoundedCornerShape(50),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
         ) {
             Text(
                 text = periodName.uppercase(),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = palette.sub4
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.5.sp,
+                    color = Color.White.copy(alpha = 0.7f)
                 )
             )
         }

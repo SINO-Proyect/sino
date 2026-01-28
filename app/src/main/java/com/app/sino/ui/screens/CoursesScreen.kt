@@ -33,6 +33,7 @@ import com.app.sino.data.remote.dto.CourseDto
 import com.app.sino.data.remote.dto.StudyPlanDto
 import com.app.sino.data.util.Resource
 import com.app.sino.ui.components.SinoButton
+import com.app.sino.ui.components.SinoTextField
 import com.app.sino.ui.theme.SinoPrimary
 import com.app.sino.ui.util.romanToDecimal
 
@@ -57,7 +58,7 @@ fun CoursesScreen(
                 viewModel.resetUpdateState()
             }
             is Resource.Error -> {
-                Toast.makeText(context, updateState?.message ?: "Error", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, (updateState as Resource.Error).message ?: "Error", Toast.LENGTH_LONG).show()
                 viewModel.resetUpdateState()
             }
             else -> {}
@@ -66,7 +67,7 @@ fun CoursesScreen(
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)
+        .background(Color(0xFF050505))
     ) {
         when (val state = uiState) {
             is CoursesUiState.Loading -> {
@@ -81,7 +82,7 @@ fun CoursesScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                     SinoButton(text = "Reintentar", onClick = { viewModel.loadStudyPlans() })
                 }
             }
@@ -108,35 +109,36 @@ fun EmptyPlanState(onAddPlanClick: () -> Unit) {
     ) {
         Box(
             modifier = Modifier
-                .size(100.dp)
-                .background(SinoPrimary.copy(alpha = 0.1f), CircleShape),
+                .size(120.dp)
+                .background(SinoPrimary.copy(alpha = 0.05f), CircleShape)
+                .border(1.dp, SinoPrimary.copy(alpha = 0.1f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.book_open_duotone),
                 contentDescription = null,
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(56.dp),
                 tint = SinoPrimary
             )
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         Text(
             text = "Sin plan de estudio",
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Parece que aún no has configurado tu camino académico. Crea un plan para empezar a seguir tu progreso.",
+            text = "Configura tu camino académico para empezar a seguir tu progreso.",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = Color.White.copy(alpha = 0.5f),
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(48.dp))
         SinoButton(
-            text = "Configurar Plan de Estudio",
+            text = "Configurar Plan",
             onClick = onAddPlanClick
         )
     }
@@ -159,15 +161,15 @@ fun ActivePlanView(plan: StudyPlanDto, viewModel: CoursesViewModel) {
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(top = 24.dp, bottom = 100.dp, start = 20.dp, end = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp, start = 16.dp, end = 16.dp), // Padding normalizado
+        verticalArrangement = Arrangement.spacedBy(12.dp) // Espaciado más ajustado
     ) {
         item {
             PlanHeaderCard(
                 plan = plan, 
                 coursesWithStatus = coursesWithStatus,
                 canEdit = canEdit,
-                onEdit = { Toast.makeText(context, "Edición de plan próximamente", Toast.LENGTH_SHORT).show() }
+                onEdit = { Toast.makeText(context, "Edición próximamente", Toast.LENGTH_SHORT).show() }
             )
         }
 
@@ -190,9 +192,9 @@ fun ActivePlanView(plan: StudyPlanDto, viewModel: CoursesViewModel) {
                 item {
                     Text(
                         text = "$level NIVEL • $period ${plan.typePeriod}".uppercase(),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.3f),
+                        fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp,
                         modifier = Modifier.padding(start = 4.dp, top = 16.dp, bottom = 4.dp)
                     )
@@ -207,8 +209,6 @@ fun ActivePlanView(plan: StudyPlanDto, viewModel: CoursesViewModel) {
                 }
             }
         }
-        
-        item { Spacer(modifier = Modifier.height(12.dp)) }
     }
 
     if (courseToEdit != null) {
@@ -233,11 +233,11 @@ fun PlanHeaderCard(
     val totalCredits = coursesWithStatus.sumOf { it.course.numCredits }
     val passedCredits = coursesWithStatus.filter { it.studentCourse?.idStatus == 4 }.sumOf { it.course.numCredits }
     
-    Surface(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        shape = RoundedCornerShape(32.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F0F0F)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
             Row(
@@ -247,16 +247,17 @@ fun PlanHeaderCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = plan.dscName,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        text = plan.dscName.uppercase(),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White,
+                        letterSpacing = 1.sp
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = plan.dscCareer,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = Color.White.copy(alpha = 0.5f)
                     )
                 }
                 if (canEdit) {
@@ -264,9 +265,10 @@ fun PlanHeaderCard(
                         onClick = onEdit,
                         modifier = Modifier
                             .size(40.dp)
-                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                            .background(Color.White.copy(alpha = 0.05f), CircleShape)
+                            .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape)
                     ) {
-                        Icon(Icons.Default.Settings, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Settings, contentDescription = "Edit", tint = Color.White, modifier = Modifier.size(18.dp))
                     }
                 }
             }
@@ -288,8 +290,8 @@ fun PlanHeaderCard(
 @Composable
 fun StatItem(label: String, value: String) {
     Column {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
-        Text(value, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.3f), fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+        Text(value, style = MaterialTheme.typography.titleMedium, color = Color.White, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -305,26 +307,27 @@ fun CourseRowItem(
     val isPassed = studentCourse?.idStatus == 4
     val isLocked = studentCourse?.idStatus == 3
 
-    Surface(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        color = if (isPassed) SinoPrimary.copy(alpha = 0.05f) else MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = if (isPassed) Color(0xFF0F0F0F) else Color(0xFF0A0A0A)),
         border = androidx.compose.foundation.BorderStroke(
             1.dp, 
-            if (isPassed) SinoPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.outline
+            if (isPassed) SinoPrimary.copy(alpha = 0.2f) else Color.White.copy(alpha = 0.05f)
         )
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(48.dp)
                     .background(
-                        if (isPassed) SinoPrimary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant, 
-                        RoundedCornerShape(12.dp)
-                    ),
+                        if (isPassed) SinoPrimary.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.03f), 
+                        RoundedCornerShape(14.dp)
+                    )
+                    .border(1.dp, if (isPassed) SinoPrimary.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.05f), RoundedCornerShape(14.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -336,8 +339,8 @@ fun CourseRowItem(
                         }
                     ),
                     contentDescription = null,
-                    tint = if (isPassed) SinoPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                    tint = if (isPassed) SinoPrimary else Color.White.copy(alpha = 0.4f),
+                    modifier = Modifier.size(22.dp)
                 )
             }
             
@@ -345,21 +348,22 @@ fun CourseRowItem(
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = course.dscName,
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = course.dscName.uppercase(),
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = if (isLocked) Color.White.copy(alpha = 0.3f) else Color.White,
+                    letterSpacing = 0.5.sp
                 )
                 Text(
                     text = "${course.dscCode} • ${course.numCredits} CR",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = Color.White.copy(alpha = 0.4f)
                 )
             }
 
             if (canEdit) {
                 IconButton(onClick = onEdit) {
-                    Icon(Icons.Default.Edit, null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Edit, null, tint = Color.White.copy(alpha = 0.2f), modifier = Modifier.size(18.dp))
                 }
             }
         }
@@ -377,83 +381,59 @@ fun EditCourseDialog(
     var credits by remember { mutableStateOf(course.numCredits.toString()) }
     
     Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(28.dp),
-            modifier = Modifier.fillMaxWidth(),
-            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        Card(
+            shape = RoundedCornerShape(32.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF0A0A0A)),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 Text(
-                    "Editar Curso",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    "EDITAR CURSO",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Black,
+                    color = Color.White,
+                    letterSpacing = 1.sp
                 )
 
-                OutlinedTextField(
+                SinoTextField(
+                    label = "Nombre",
                     value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nombre del Curso") },
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        focusedBorderColor = SinoPrimary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                        focusedLabelColor = SinoPrimary,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.fillMaxWidth()
+                    onValueChange = { name = it }
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedTextField(
-                        value = code,
-                        onValueChange = { code = it },
-                        label = { Text("Código") },
-                        singleLine = true,
-                        modifier = Modifier.weight(1f),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedBorderColor = SinoPrimary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                            focusedLabelColor = SinoPrimary,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        SinoTextField(
+                            label = "Código",
+                            value = code,
+                            onValueChange = { code = it }
                         )
-                    )
-                    OutlinedTextField(
-                        value = credits,
-                        onValueChange = { if (it.all { char -> char.isDigit() }) credits = it },
-                        label = { Text("Créditos") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(0.7f),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedBorderColor = SinoPrimary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                            focusedLabelColor = SinoPrimary,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                    Box(modifier = Modifier.weight(0.7f)) {
+                        SinoTextField(
+                            label = "Créditos",
+                            value = credits,
+                            onValueChange = { if (it.all { char -> char.isDigit() }) credits = it },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
-                    )
+                    }
                 }
 
                 Row(
                     horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancelar", color = MaterialTheme.colorScheme.error)
+                        Text("CANCELAR", color = Color.White.copy(alpha = 0.4f), fontWeight = FontWeight.Bold)
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     SinoButton(
-                        text = "Guardar Cambios",
+                        text = "GUARDAR",
                         onClick = {
                             onSave(
                                 course.copy(
@@ -463,7 +443,7 @@ fun EditCourseDialog(
                                 )
                             )
                         },
-                        modifier = Modifier.width(160.dp)
+                        modifier = Modifier.width(140.dp)
                     )
                 }
             }

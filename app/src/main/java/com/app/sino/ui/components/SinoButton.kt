@@ -34,28 +34,30 @@ fun SinoButton(
     isOutlined: Boolean = false,
     enabled: Boolean = true
 ) {
+    val shape = RoundedCornerShape(20.dp) // Apple-style rounded corners
+
     if (isOutlined) {
         OutlinedButton(
             onClick = onClick,
             modifier = modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(60.dp),
             enabled = enabled,
             colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.primary,
-                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                contentColor = SinoPrimary,
+                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
             ),
             border = BorderStroke(
                 width = 1.dp,
-                color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                color = if (enabled) SinoPrimary.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
             ),
-            shape = RoundedCornerShape(16.dp),
+            shape = shape,
             contentPadding = PaddingValues(horizontal = 24.dp)
         ) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Bold
             )
         }
     } else {
@@ -63,18 +65,17 @@ fun SinoButton(
             onClick = onClick,
             modifier = modifier
                 .fillMaxWidth()
-                .height(56.dp)
-                .clip(RoundedCornerShape(16.dp)),
+                .height(60.dp)
+                .clip(shape),
             enabled = enabled,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent, // We'll use the background brush
-                contentColor = SinoWhite,
-                disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                containerColor = Color.Transparent,
+                contentColor = Color.Black, // Dark text on light green button
+                disabledContainerColor = Color.White.copy(alpha = 0.05f),
+                disabledContentColor = Color.White.copy(alpha = 0.3f)
             ),
             contentPadding = PaddingValues(0.dp),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp, pressedElevation = 0.dp),
-            shape = RoundedCornerShape(16.dp)
+            shape = shape
         ) {
             Box(
                 modifier = Modifier

@@ -56,7 +56,7 @@ fun BottomNavigationBar(navController: NavController) {
                 contentAlignment = Alignment.Center
             ) {
                 NavigationBar(
-                    modifier = Modifier.widthIn(max = 600.dp),
+                    modifier = Modifier.widthIn(max = 400.dp), // Narrower for closer icons
                     containerColor = Color.Transparent,
                     tonalElevation = 0.dp,
                     windowInsets = WindowInsets(0, 0, 0, 0)
@@ -71,7 +71,7 @@ fun BottomNavigationBar(navController: NavController) {
                                 Icon(
                                     painter = painterResource(id = if (isSelected) screen.iconFilled else screen.iconOutline),
                                     contentDescription = screen.title,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(28.dp) // Larger icons
                                 )
                             },
                             selected = isSelected,

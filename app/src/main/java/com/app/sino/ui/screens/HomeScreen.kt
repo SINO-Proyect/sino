@@ -60,11 +60,11 @@ fun HomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFF050505)) // Deep black background
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(top = 32.dp, bottom = 100.dp, start = 20.dp, end = 20.dp),
+            contentPadding = PaddingValues(top = 40.dp, bottom = 100.dp, start = 20.dp, end = 20.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Welcome Header
@@ -78,57 +78,57 @@ fun HomeScreen(
                         Text(
                             text = if (userData == null) "Hola..." else "¡Hola, ${userData?.fullName?.split(" ")?.firstOrNull()}!",
                             style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.onBackground
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
                         )
                         Text(
-                            text = "Tienes un futuro brillante por delante.",
+                            text = "Tu progreso hoy es increíble.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = Color.White.copy(alpha = 0.5f)
                         )
                     }
                     Surface(
                         onClick = { /* TODO */ },
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        color = Color.White.copy(alpha = 0.05f),
                         shape = CircleShape,
                         modifier = Modifier.size(48.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Notifications, null, tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.Notifications, null, tint = Color.White, modifier = Modifier.size(20.dp))
                         }
                     }
                 }
             }
 
-            // Main Progress Card (Pro Style)
+            // Main Progress Card (Apple Pro Style)
             item {
                 if (isLoading) {
-                    Box(modifier = Modifier.fillMaxWidth().height(180.dp).background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(24.dp)))
+                    Box(modifier = Modifier.fillMaxWidth().height(180.dp).background(Color.White.copy(alpha = 0.03f), RoundedCornerShape(32.dp)))
                 } else {
-                    Surface(
+                    Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(28.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                        shape = RoundedCornerShape(32.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F0F0F)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
                     ) {
                         Column(modifier = Modifier.padding(24.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(
                                     modifier = Modifier
-                                        .size(44.dp)
+                                        .size(48.dp)
                                         .background(
-                                            Brush.horizontalGradient(listOf(PremiumGradientStart, PremiumGradientEnd)),
-                                            CircleShape
+                                            Brush.verticalGradient(listOf(PremiumGradientStart, PremiumGradientEnd)),
+                                            RoundedCornerShape(14.dp)
                                         ),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(Icons.Default.Star, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                                    Icon(Icons.Default.Star, null, tint = Color.Black, modifier = Modifier.size(22.dp))
                                 }
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Column {
-                                    Text("Progreso Académico", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium)
-                                    Text(activePlan?.dscName ?: "Sin plan activo", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
+                                    Text("PROGRESO ACADÉMICO", fontWeight = FontWeight.Bold, color = Color.White, style = MaterialTheme.typography.labelSmall, letterSpacing = 1.sp)
+                                    Text(activePlan?.dscName ?: "Sin plan activo", color = Color.White.copy(alpha = 0.5f), style = MaterialTheme.typography.bodyMedium)
                                 }
                             }
                             
@@ -138,26 +138,35 @@ fun HomeScreen(
                                 progress = { progress },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(10.dp)
+                                    .height(8.dp)
                                     .clip(CircleShape),
                                 color = SinoPrimary,
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                                trackColor = Color.White.copy(alpha = 0.05f)
                             )
                             
                             Spacer(modifier = Modifier.height(20.dp))
                             
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(
-                                    text = "${(progress * 100).toInt()}% completado",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = SinoPrimary,
-                                    fontWeight = FontWeight.Bold
-                                )
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
+                                Column {
+                                    Text(
+                                        text = "${(progress * 100).toInt()}%",
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        color = SinoPrimary,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "Completado",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = Color.White.copy(alpha = 0.4f),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                                 Text(
                                     text = "$passedCredits / $totalCredits CR",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = FontWeight.Medium
+                                    color = Color.White.copy(alpha = 0.6f),
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(bottom = 4.dp)
                                 )
                             }
                         }
@@ -168,64 +177,67 @@ fun HomeScreen(
             // Current Courses Section Header
             item {
                 Text(
-                    text = "Cursando actualmente",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.Bold
+                    text = "CURSANDO",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 2.sp
                 )
             }
 
             if (isLoading) {
                 items(2) {
-                    Box(modifier = Modifier.fillMaxWidth().height(80.dp).background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(20.dp)))
+                    Box(modifier = Modifier.fillMaxWidth().height(90.dp).background(Color.White.copy(alpha = 0.03f), RoundedCornerShape(24.dp)))
                 }
             } else if (inProgressCourses.isEmpty()) {
                 item {
                     Text(
                         "No tienes materias en curso.",
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                        color = Color.White.copy(alpha = 0.3f),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
             } else {
                 items(inProgressCourses) { item ->
-                    Surface(
+                    Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F0F0F)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
                     ) {
                         Row(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(20.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(48.dp)
-                                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)),
+                                    .size(52.dp)
+                                    .background(Color.White.copy(alpha = 0.03f), RoundedCornerShape(16.dp))
+                                    .border(1.dp, Color.White.copy(alpha = 0.05f), RoundedCornerShape(16.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.book_open_duotone), 
                                     null, 
                                     tint = SinoPrimary, 
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(26.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    item.course.dscName, 
+                                    item.course.dscName.uppercase(), 
                                     fontWeight = FontWeight.Bold, 
-                                    color = MaterialTheme.colorScheme.onSurface, 
-                                    style = MaterialTheme.typography.bodyLarge
+                                    color = Color.White, 
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    letterSpacing = 0.5.sp
                                 )
                                 Text(
                                     item.course.dscCode, 
                                     style = MaterialTheme.typography.labelSmall, 
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = Color.White.copy(alpha = 0.4f)
                                 )
                             }
                             Text(

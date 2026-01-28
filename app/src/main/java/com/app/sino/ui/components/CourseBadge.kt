@@ -9,8 +9,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,8 +20,9 @@ import androidx.compose.ui.unit.sp
 import com.app.sino.R
 import com.app.sino.ui.model.BadgePalette
 import com.app.sino.ui.model.CourseStatus
+import com.app.sino.ui.theme.EmeraldDeep
+import com.app.sino.ui.theme.SinoPrimary
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CourseBadge(
     courseName: String,
@@ -31,126 +32,102 @@ fun CourseBadge(
     prerequisitesCodes: List<String> = emptyList(),
     modifier: Modifier = Modifier
 ) {
-    val badgeSize = 110.dp
-    val mainCircleSize = 76.dp
-
     val isProgress = status == CourseStatus.IN_PROGRESS
     val isLocked = status == CourseStatus.LOCKED
     val isPassed = status == CourseStatus.PASSED
     val isAvailable = status == CourseStatus.AVAILABLE
 
-    // Colors derived from the specific palette for this period/level
-    val baseColor = if (isLocked) Color(0xFF64748B) else palette.main
-    val statusColor = when {
-        isPassed -> Color(0xFF10B981) // Consistent Emerald for Passed
-        isProgress -> palette.main
-        isAvailable -> palette.main.copy(alpha = 0.8f)
-        else -> baseColor
+    val badgeColor = when {
+        isPassed -> SinoPrimary
+        isProgress -> Color(0xFF32D74B)
+        isAvailable -> Color.White.copy(alpha = 0.9f)
+        else -> Color(0xFF2C2C2E)
     }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxWidth()
-            .padding(4.dp)
+            .padding(vertical = 8.dp, horizontal = 4.dp)
     ) {
+        // Círculo Grande (88dp) con colores originales
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(badgeSize)
+            modifier = Modifier
+                .size(88.dp)
+                .then(
+                    if (isProgress) Modifier.shadow(16.dp, CircleShape, spotColor = badgeColor)
+                    else Modifier
+                )
+                .clip(CircleShape)
+                .background(
+                    when {
+                        isLocked -> Color(0xFF1C1C1E)
+                        isPassed -> EmeraldDeep
+                        isAvailable -> Color.White.copy(alpha = 0.05f)
+                        else -> badgeColor
+                    }
+                )
+                .border(
+                    width = 1.5.dp,
+                    color = badgeColor.copy(alpha = 0.2f),
+                    shape = CircleShape
+                )
         ) {
-            // Glow effect for active states
-            if (!isLocked) {
-                Box(
-                    modifier = Modifier
-                        .size(mainCircleSize + 8.dp)
-                        .background(statusColor.copy(alpha = 0.1f), CircleShape)
-                )
-            }
-
-            // Main Circle
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(mainCircleSize)
-                    .clip(CircleShape)
-                    .background(if (isLocked) Color(0xFF0F172A) else Color(0xFF020617))
-                    .border(
-                        width = 1.dp,
-                        color = statusColor.copy(alpha = 0.5f),
-                        shape = CircleShape
-                    )
-            ) {
-                Icon(
-                    painter = painterResource(
-                        id = when {
-                            isLocked -> R.drawable.lock
-                            isAvailable -> R.drawable.lock_open
-                            isPassed -> R.drawable.check
-                            else -> R.drawable.book_open_duotone
-                        }
-                    ),
-                    contentDescription = null,
-                    tint = statusColor,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-
-            // Code Label (Glassmorphism effect)
-            Surface(
-                color = statusColor.copy(alpha = 0.9f),
-                shape = RoundedCornerShape(50),
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .offset(y = (-2).dp)
-            ) {
-                Text(
-                    text = courseCode,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Black,
-                        fontSize = 8.sp,
-                        color = Color.White
-                    )
-                )
-            }
+            Icon(
+                painter = painterResource(
+                    id = when {
+                        isLocked -> R.drawable.lock
+                        isAvailable -> R.drawable.lock_open
+                        isPassed -> R.drawable.check
+                        else -> R.drawable.book_open_duotone
+                    }
+                ),
+                contentDescription = null,
+                tint = when {
+                    isPassed -> SinoPrimary
+                    isProgress -> Color.Black
+                    isAvailable -> Color.White
+                    else -> Color.White.copy(alpha = 0.15f)
+                },
+                modifier = Modifier.size(32.dp)
+            )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Nombre del Curso (14sp)
+        Text(
+            text = courseName,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                lineHeight = 18.sp,
+                fontSize = 14.sp
+            ),
+            color = if (isLocked) Color.White.copy(alpha = 0.2f) else Color.White,
+            maxLines = 2,
+            minLines = 2,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = courseName.uppercase(),
-            style = MaterialTheme.typography.labelSmall.copy(
-                lineHeight = 12.sp,
-                fontWeight = FontWeight.Black,
-                textAlign = TextAlign.Center,
-                letterSpacing = 0.5.sp
-            ),
-            color = if (isLocked) Color.Gray else Color.White,
-            maxLines = 2,
-            modifier = Modifier.width(100.dp)
-        )
-
-        if (isLocked && prerequisitesCodes.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(6.dp))
-            androidx.compose.foundation.layout.FlowRow(
-                horizontalArrangement = Arrangement.Center,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.width(110.dp)
-            ) {
-                prerequisitesCodes.forEach { code ->
-                    Surface(
-                        color = Color(0xFFEF4444).copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(4.dp),
-                        border = androidx.compose.foundation.BorderStroke(0.5.dp, Color(0xFFEF4444).copy(alpha = 0.3f))
-                    ) {
-                        Text(
-                            text = code,
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 7.sp, color = Color(0xFFF87171), fontWeight = FontWeight.Bold)
-                        )
-                    }
-                }
-            }
+        // Chip de Código (13sp)
+        Surface(
+            color = Color.White.copy(alpha = 0.05f),
+            shape = RoundedCornerShape(50),
+        ) {
+            Text(
+                text = courseCode,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp,
+                    color = if (isLocked) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.4f),
+                    letterSpacing = 0.5.sp
+                )
+            )
         }
     }
 }

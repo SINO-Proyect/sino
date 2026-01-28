@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.app.sino.ui.theme.SinoPrimary
 
 @Composable
@@ -54,20 +55,22 @@ fun SinoTextField(
         targetValue = when {
             isError -> MaterialTheme.colorScheme.error
             isFocused -> SinoPrimary
-            else -> Color.Transparent
+            else -> Color.White.copy(alpha = 0.05f)
         },
         label = "BorderColorAnimation"
     )
 
     Column(modifier = modifier) {
         Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+            text = label.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 1.sp,
+            color = if (isError) MaterialTheme.colorScheme.error else Color.White.copy(alpha = 0.4f),
+            modifier = Modifier.padding(start = 4.dp)
         )
         
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         
         TextField(
             value = value,
@@ -75,25 +78,25 @@ fun SinoTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
-                    width = 1.5.dp,
+                    width = 1.dp,
                     color = borderColor,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(16.dp)
                 )
                 .onFocusChanged { isFocused = it.isFocused },
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(16.dp),
             placeholder = if (placeholder != null) {
-                { Text(text = placeholder, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)) }
+                { Text(text = placeholder, style = MaterialTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.2f)) }
             } else null,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                focusedContainerColor = Color.White.copy(alpha = 0.03f),
+                unfocusedContainerColor = Color.White.copy(alpha = 0.03f),
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 errorIndicatorColor = Color.Transparent,
                 cursorColor = SinoPrimary,
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                errorContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                errorContainerColor = Color.White.copy(alpha = 0.03f)
             ),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
@@ -108,14 +111,14 @@ fun SinoTextField(
                                 painter = painterResource(id = trailingIconRes),
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp),
-                                tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = if (isError) MaterialTheme.colorScheme.error else Color.White.copy(alpha = 0.3f)
                             )
                         } else if (trailingIcon != null) {
                             Icon(
                                 imageVector = trailingIcon,
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp),
-                                tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = if (isError) MaterialTheme.colorScheme.error else Color.White.copy(alpha = 0.3f)
                             )
                         }
                     }
@@ -128,7 +131,7 @@ fun SinoTextField(
                 text = errorMessage,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                modifier = Modifier.padding(start = 4.dp, top = 6.dp)
             )
         }
     }

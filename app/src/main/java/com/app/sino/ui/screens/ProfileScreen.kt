@@ -82,7 +82,7 @@ fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFF050505))
     ) {
         PullToRefreshBox(
             isRefreshing = isLoading,
@@ -98,15 +98,15 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(scrollState)
-                        .padding(horizontal = 24.dp, vertical = 32.dp),
+                        .padding(horizontal = 24.dp, vertical = 40.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Plan Type Badge
+                    // Plan Type Badge (Apple Style)
                     if (planType.contains("PREMIUM")) {
                         Surface(
-                            color = SinoPrimary.copy(alpha = 0.15f),
+                            color = SinoPrimary.copy(alpha = 0.1f),
                             shape = RoundedCornerShape(50),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, SinoPrimary.copy(alpha = 0.3f))
+                            border = androidx.compose.foundation.BorderStroke(1.dp, SinoPrimary.copy(alpha = 0.2f))
                         ) {
                             Text(
                                 text = "✨ $planType",
@@ -119,30 +119,30 @@ fun ProfileScreen(
                         }
                     } else {
                         Surface(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            color = Color.White.copy(alpha = 0.05f),
                             shape = RoundedCornerShape(50),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
                         ) {
                             Text(
                                 text = "$planType PLAN",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = Color.White.copy(alpha = 0.6f),
                                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(40.dp))
 
-                    // QR Container
-                    Surface(
-                        modifier = Modifier.size(200.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                    // QR Container (Apple Pro Style)
+                    Card(
+                        modifier = Modifier.size(220.dp),
+                        shape = RoundedCornerShape(32.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
                     ) {
-                        Box(modifier = Modifier.padding(20.dp), contentAlignment = Alignment.Center) {
+                        Box(modifier = Modifier.padding(24.dp), contentAlignment = Alignment.Center) {
                             qrBitmap?.let {
                                 Image(
                                     bitmap = it.asImageBitmap(),
@@ -154,24 +154,26 @@ fun ProfileScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     Text(
                         text = name ?: "Usuario Invitado",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onBackground
+                        fontWeight = FontWeight.Black,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
                     )
                     if (username != null) {
                         Text(
-                            text = username,
+                            text = username.lowercase(),
                             style = MaterialTheme.typography.titleMedium,
                             color = SinoPrimary,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.5.sp
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(40.dp))
 
                     if (degree != null) {
                         CareerProgressCard(degree = degree, progress = progress)
@@ -203,31 +205,28 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // Details Card
-                    Surface(
+                    Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F0F0F)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
                     ) {
-                        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                            ProfileDetailItem(iconRes = R.drawable.ic_profile_outline, label = "Correo Electrónico", value = email)
-                            ProfileDetailItem(iconRes = R.drawable.ic_calendar_filled, label = "Miembro desde", value = joinedDate)
+                        Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                            ProfileDetailItem(iconRes = R.drawable.ic_profile_outline, label = "CORREO ELECTRÓNICO", value = email)
+                            ProfileDetailItem(iconRes = R.drawable.ic_calendar_filled, label = "MIEMBRO DESDE", value = joinedDate)
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(40.dp))
 
-                    OutlinedButton(
+                    TextButton(
                         onClick = onLogout,
-                        modifier = Modifier.fillMaxWidth().height(56.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                        shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
+                        modifier = Modifier.fillMaxWidth().height(56.dp)
                     ) {
-                        Text(text = "Cerrar Sesión", fontWeight = FontWeight.Bold)
+                        Text(text = "CERRAR SESIÓN", fontWeight = FontWeight.Black, color = Color(0xFFFF453A), letterSpacing = 1.sp)
                     }
                     
-                    Spacer(modifier = Modifier.height(100.dp))
+                    Spacer(modifier = Modifier.height(120.dp))
                 }
             }
         }
@@ -236,65 +235,75 @@ fun ProfileScreen(
 
 @Composable
 fun StatCard(value: String, label: String, iconRes: Int, modifier: Modifier = Modifier) {
-    Surface(
+    Card(
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F0F0F)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(painter = painterResource(id = iconRes), null, tint = SinoPrimary, modifier = Modifier.size(24.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onSurface)
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(SinoPrimary.copy(alpha = 0.1f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(painter = painterResource(id = iconRes), null, tint = SinoPrimary, modifier = Modifier.size(20.dp))
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = Color.White)
+            Text(label.uppercase(), style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.3f), fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
         }
     }
 }
 
 @Composable
 fun NoPlanCard() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.1f))
-            .border(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFF453A).copy(alpha = 0.05f)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFF453A).copy(alpha = 0.1f))
     ) {
-        Icon(
-            imageVector = Icons.Default.Warning,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column {
-            Text(
-                text = "Sin Plan Activo",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.error
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null,
+                tint = Color(0xFFFF453A),
+                modifier = Modifier.size(28.dp)
             )
-            Text(
-                text = "Selecciona una carrera para ver tu avance.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = "SIN PLAN ACTIVO",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFFFF453A),
+                    letterSpacing = 1.sp
+                )
+                Text(
+                    text = "Selecciona una carrera para ver tu avance.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.4f)
+                )
+            }
         }
     }
 }
 
 @Composable
 fun CareerProgressCard(degree: String, progress: Float) {
-    Surface(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        shape = RoundedCornerShape(32.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F0F0F)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
             Row(
@@ -306,17 +315,18 @@ fun CareerProgressCard(degree: String, progress: Float) {
                     Text(
                         text = "PLAN ACTUAL",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = FontWeight.Bold,
+                        color = Color.White.copy(alpha = 0.4f),
+                        fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = degree,
+                        text = degree.uppercase(),
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 22.sp
+                        color = Color.White,
+                        fontWeight = FontWeight.Black,
+                        lineHeight = 22.sp,
+                        letterSpacing = 0.5.sp
                     )
                 }
                 Text(
@@ -327,7 +337,7 @@ fun CareerProgressCard(degree: String, progress: Float) {
                 )
             }
             
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             LinearProgressIndicator(
                 progress = { progress },
@@ -336,7 +346,7 @@ fun CareerProgressCard(degree: String, progress: Float) {
                     .height(8.dp)
                     .clip(CircleShape),
                 color = SinoPrimary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                trackColor = Color.White.copy(alpha = 0.05f)
             )
         }
     }
@@ -345,23 +355,33 @@ fun CareerProgressCard(degree: String, progress: Float) {
 @Composable
 fun ProfileDetailItem(iconRes: Int, label: String, value: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            modifier = Modifier.size(20.dp)
-        )
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(Color.White.copy(alpha = 0.03f), RoundedCornerShape(12.dp))
+                .border(1.dp, Color.White.copy(alpha = 0.05f), RoundedCornerShape(12.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = null,
+                tint = Color.White.copy(alpha = 0.4f),
+                modifier = Modifier.size(20.dp)
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(
-                text = label,
+                text = label.uppercase(),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = Color.White.copy(alpha = 0.3f),
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = Color.White,
                 fontWeight = FontWeight.Medium
             )
         }
