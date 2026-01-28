@@ -26,7 +26,7 @@ import com.app.sino.R
 import com.app.sino.ui.components.BottomNavigationBar
 import com.app.sino.ui.navigation.Screen
 import com.app.sino.ui.screens.AddStudyPlanScreen
-import com.app.sino.ui.screens.CalendarScreen
+import com.app.sino.ui.screens.calendar.CalendarScreen
 import com.app.sino.ui.screens.CoursesScreen
 import com.app.sino.ui.screens.HomeScreen
 import com.app.sino.ui.screens.PathScreen
@@ -102,7 +102,7 @@ fun MainScreen(onLogout: () -> Unit) {
                     onAddPlanClick = { navController.navigate(Screen.AddStudyPlan.route) }
                 ) 
             }
-            composable(Screen.Calendar.route) { CalendarScreen() }
+            composable(Screen.Calendar.route) { CalendarScreen(navController = navController) }
             composable(Screen.Profile.route) { ProfileScreen(onLogout = onLogout) }
             
             composable(Screen.AddStudyPlan.route) { 

@@ -51,8 +51,3 @@ data class PageResponse<T>(
     val number: Int
 )
 
-data class ApiResponse<T>(
-    val success: Boolean,
-    val data: T?,
-    val message: String
-)
