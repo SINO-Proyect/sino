@@ -2,6 +2,7 @@ package com.app.sino.ui.auth
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,13 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.sino.R
 import com.app.sino.data.util.Resource
-import com.app.sino.ui.components.SinoBottomCard
 import com.app.sino.ui.components.SinoButton
-import com.app.sino.ui.components.SinoScreenWrapper
 import com.app.sino.ui.components.SinoTextField
-import com.app.sino.ui.theme.Dimens
-import com.app.sino.ui.theme.SinoBlack
-import com.app.sino.ui.theme.SinoWhite
+import com.app.sino.ui.theme.SinoPrimary
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -86,192 +83,150 @@ fun SignUpScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color.Transparent
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        SinoScreenWrapper(backgroundImageRes = R.drawable.bg3) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 24.dp)
+        ) {
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = "Crea tu cuenta",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = "Únete a SINO y empieza a planificar tu futuro.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                SinoTextField(
+                    label = "Nombre Completo",
+                    value = name,
+                    onValueChange = { 
+                        name = it
+                        viewModel.clearRegisterErrors()
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    placeholder = "Juan Pérez",
+                    isError = registerFormState.nameError != null,
+                    errorMessage = registerFormState.nameError
+                )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = Dimens.HeaderTopPadding, bottom = Dimens.HeaderBottomPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Create Account",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = SinoBlack
-                    )
-                }
+                SinoTextField(
+                    label = "Nombre de Usuario",
+                    value = username,
+                    onValueChange = { 
+                        username = it
+                        viewModel.clearRegisterErrors()
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    placeholder = "juanperez",
+                    isError = registerFormState.usernameError != null,
+                    errorMessage = registerFormState.usernameError
+                )
 
+                SinoTextField(
+                    label = "Correo Electrónico",
+                    value = email,
+                    onValueChange = { 
+                        email = it
+                        viewModel.clearRegisterErrors()
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    placeholder = "tu@email.com",
+                    isError = registerFormState.emailError != null,
+                    errorMessage = registerFormState.emailError
+                )
 
-                SinoBottomCard(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = Dimens.PaddingExtraLarge, vertical = Dimens.PaddingHuge),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                SinoTextField(
+                    label = "Contraseña",
+                    value = password,
+                    onValueChange = { 
+                        password = it
+                        viewModel.clearRegisterErrors()
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Next
+                    ),
+                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIconRes = if (isPasswordVisible) R.drawable.eye_bold else R.drawable.eye_closed_bold,
+                    onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
+                    placeholder = "••••••••",
+                    isError = registerFormState.passwordError != null,
+                    errorMessage = registerFormState.passwordError
+                )
 
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState()),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            
-
-                            SinoTextField(
-                                label = "Full Name",
-                                value = name,
-                                onValueChange = { 
-                                    name = it
-                                    viewModel.clearRegisterErrors()
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Next
-                                ),
-                                placeholder = "Your Name",
-                                isError = registerFormState.nameError != null,
-                                errorMessage = registerFormState.nameError
-                            )
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            SinoTextField(
-                                label = "Username",
-                                value = username,
-                                onValueChange = { 
-                                    username = it
-                                    viewModel.clearRegisterErrors()
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Next
-                                ),
-                                placeholder = "username",
-                                isError = registerFormState.usernameError != null,
-                                errorMessage = registerFormState.usernameError
-                            )
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-
-                            SinoTextField(
-                                label = "Email Address",
-                                value = email,
-                                onValueChange = { 
-                                    email = it
-                                    viewModel.clearRegisterErrors()
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Email,
-                                    imeAction = ImeAction.Next
-                                ),
-                                placeholder = "example@email.com",
-                                isError = registerFormState.emailError != null,
-                                errorMessage = registerFormState.emailError
-                            )
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-
-                            SinoTextField(
-                                label = "Password",
-                                value = password,
-                                onValueChange = { 
-                                    password = it
-                                    viewModel.clearRegisterErrors()
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Password,
-                                    imeAction = ImeAction.Next
-                                ),
-                                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                                trailingIconRes = if (isPasswordVisible) R.drawable.eye_bold else R.drawable.eye_closed_bold,
-                                onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
-                                placeholder = "••••••••",
-                                isError = registerFormState.passwordError != null,
-                                errorMessage = registerFormState.passwordError
-                            )
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-
-                            SinoTextField(
-                                label = "Confirm Password",
-                                value = confirmPassword,
-                                onValueChange = { 
-                                    confirmPassword = it
-                                    viewModel.clearRegisterErrors()
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Password,
-                                    imeAction = ImeAction.Done
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onDone = { viewModel.register(email, password, confirmPassword, name, username, "") }
-                                ),
-                                visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                                trailingIconRes = if (isConfirmPasswordVisible) R.drawable.eye_bold else R.drawable.eye_closed_bold,
-                                onTrailingIconClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible },
-                                placeholder = "••••••••",
-                                isError = registerFormState.confirmPasswordError != null,
-                                errorMessage = registerFormState.confirmPasswordError
-                            )
-                            
-                            Spacer(modifier = Modifier.height(Dimens.PaddingMega))
-                        }
-
-
-                        if (apiError != null) {
-                            Text(
-                                text = apiError!!,
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        val isSignUpEnabled = viewModel.isRegisterValid(email, password, confirmPassword, name, username)
-
-
-                        if (authState is Resource.Loading) {
-                            SinoButton(
-                                text = "Creating account...",
-                                onClick = {},
-                                containerColor = SinoWhite,
-                                contentColor = SinoBlack,
-                                enabled = false
-                            )
-                        } else {
-                            SinoButton(
-                                text = "Sign Up",
-                                onClick = {
-                                    viewModel.register(email, password, confirmPassword, name, username, "")
-                                },
-                                containerColor = if (isSignUpEnabled) SinoWhite else Color.DarkGray.copy(alpha = 0.15f),
-                                contentColor = if (isSignUpEnabled) SinoBlack else Color.Gray.copy(alpha = 0.5f),
-                                enabled = isSignUpEnabled
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.height(Dimens.PaddingExtraLarge))
-                    }
-                }
+                SinoTextField(
+                    label = "Confirmar Contraseña",
+                    value = confirmPassword,
+                    onValueChange = { 
+                        confirmPassword = it
+                        viewModel.clearRegisterErrors()
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { viewModel.register(email, password, confirmPassword, name, username, "") }
+                    ),
+                    visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIconRes = if (isConfirmPasswordVisible) R.drawable.eye_bold else R.drawable.eye_closed_bold,
+                    onTrailingIconClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible },
+                    placeholder = "••••••••",
+                    isError = registerFormState.confirmPasswordError != null,
+                    errorMessage = registerFormState.confirmPasswordError
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
             }
+
+            if (apiError != null) {
+                Text(
+                    text = apiError!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                )
+            }
+
+            val isSignUpEnabled = viewModel.isRegisterValid(email, password, confirmPassword, name, username)
+
+            SinoButton(
+                text = if (authState is Resource.Loading) "Creando cuenta..." else "Registrarse",
+                onClick = {
+                    viewModel.register(email, password, confirmPassword, name, username, "")
+                },
+                enabled = isSignUpEnabled && authState !is Resource.Loading
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

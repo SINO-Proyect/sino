@@ -18,24 +18,23 @@ data class BadgePalette(
 )
 
 object PathTheme {
-    val rainbowColors = listOf(
-        BadgePalette(Color(0xFFE35D5B), Color(0xFF9E2A29), Color(0xFF7A1817), Color(0xFF520B0A), Color(0xFFF5C8C7)),
-        BadgePalette(Color(0xFFF38B28), Color(0xFFB96F00), Color(0xFF915700), Color(0xFF613A00), Color(0xFFF8C890)),
-        BadgePalette(Color(0xFFEBC347), Color(0xFF9C7D1A), Color(0xFF755D10), Color(0xFF4D3D08), Color(0xFFFBEFB9)),
-        BadgePalette(Color(0xFF32A94D), Color(0xFF18682B), Color(0xFF1B5626), Color(0xFF0B3816), Color(0xFFB2DCA9)),
-        BadgePalette(Color(0xFF4581BF), Color(0xFF275A8E), Color(0xFF164478), Color(0xFF072751), Color(0xFF9FD0EC)),
-        BadgePalette(Color(0xFF874A97), Color(0xFF572E62), Color(0xFF531C5A), Color(0xFF360F3D), Color(0xFFC59CDB))
+    // Apple-style Emerald/Green Palettes
+    val accentColors = listOf(
+        BadgePalette(Color(0xFF34C759), Color(0xFF30D158), Color(0xFF248A3D), Color(0xFF1E6F31), Color(0xFFE3F9E5)), // Apple Green
+        BadgePalette(Color(0xFF10B981), Color(0xFF059669), Color(0xFF047857), Color(0xFF065F46), Color(0xFFD1FAE5)), // Emerald
+        BadgePalette(Color(0xFF32D74B), Color(0xFF28A745), Color(0xFF218838), Color(0xFF1E7E34), Color(0xFFD4EDDA))  // System Green
     )
 
     val grayPalette = BadgePalette(
-        main = Color(0xFF4A5B64),
-        sub1 = Color(0xFF3A474D),
-        sub2 = Color(0xFF424242),
-        sub3 = Color(0xFF212121),
-        sub4 = Color(0xFFD3D3D3)
+        main = Color(0xFF3A3A3C), // Apple Dark Gray
+        sub1 = Color(0xFF2C2C2E),
+        sub2 = Color(0xFF1C1C1E),
+        sub3 = Color(0xFF000000),
+        sub4 = Color(0xFF8E8E93)
     )
 
     fun getBadgePalette(index: Int): BadgePalette {
-        return rainbowColors[index % rainbowColors.size]
+        // If the user wants uniformity, we can just return one or cycle through very similar greens
+        return accentColors[index % accentColors.size]
     }
 }

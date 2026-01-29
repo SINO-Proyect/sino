@@ -35,6 +35,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.sino.R
 import com.app.sino.data.remote.dto.UniversityDto
+import com.app.sino.ui.util.romanToDecimal
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -703,6 +704,7 @@ fun CurriculumStep(viewModel: AddStudyPlanViewModel) {
     if (showCycleDialog) {
         AddCycleDialog(
             periodTypeName = periodType,
+            viewModel = viewModel,
             onDismiss = { showCycleDialog = false },
             onSave = { degree, number ->
                 viewModel.addCycle(degree, number)
@@ -930,11 +932,31 @@ fun AddUniversityDialog(
 @Composable
 fun AddCycleDialog(
     periodTypeName: String,
+    viewModel: AddStudyPlanViewModel,
     onDismiss: () -> Unit,
     onSave: (String, String) -> Unit
 ) {
-    var degree by remember { mutableStateOf("I") }
-    var number by remember { mutableStateOf("1") }
+    val cycles by viewModel.cycles.collectAsState()
+    
+    // Suggest next period based on existing ones
+    val lastCycle = cycles.lastOrNull()
+    var degreeInt by remember { mutableIntStateOf(lastCycle?.let { it.degree.romanToDecimal() } ?: 1) }
+    var numberInt by remember { 
+        mutableIntStateOf(
+            if (lastCycle != null) {
+                val lastNum = lastCycle.number.toIntOrNull() ?: 1
+                if (lastNum >= 2 && periodTypeName == "Semestre") {
+                    degreeInt++
+                    1
+                } else if (lastNum >= 3 && periodTypeName == "Cuatrimestre") {
+                    degreeInt++
+                    1
+                } else {
+                    lastNum + 1
+                }
+            } else 1
+        )
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -943,48 +965,105 @@ fun AddCycleDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(Color.Black.copy(alpha = 0.5f)),
             contentAlignment = Alignment.Center
         ) {
             Card(
                 modifier = Modifier
-                    .fillMaxWidth(0.95f)
+                    .fillMaxWidth(0.9f)
                     .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(24.dp)),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier.padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Nuevo $periodTypeName", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Nuevo $periodTypeName",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                     
-                    OutlinedTextField(
-                        value = degree,
-                        onValueChange = { degree = it },
-                        label = { Text("Grado (ej. I, II)") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Año / Nivel Académico", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                        NumericSelector(
+                            value = degreeInt,
+                            onValueChange = { if (it >= 1) degreeInt = it },
+                            label = "Nivel"
+                        )
+                    }
 
-                    OutlinedTextField(
-                        value = number,
-                        onValueChange = { number = it },
-                        label = { Text("Número (ej. 1, 2)") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Número de $periodTypeName", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                        NumericSelector(
+                            value = numberInt,
+                            onValueChange = { if (it >= 1) numberInt = it },
+                            label = periodTypeName
+                        )
+                    }
 
-                    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         TextButton(onClick = onDismiss) { Text("Cancelar") }
+                        Spacer(modifier = Modifier.width(8.dp))
                         Button(
-                            onClick = { onSave(degree, number) },
-                            shape = RoundedCornerShape(12.dp)
-                        ) { Text("Agregar") }
+                            onClick = { onSave(degreeInt.toString(), numberInt.toString()) },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.height(48.dp)
+                        ) { 
+                            Icon(Icons.Default.Add, null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Agregar") 
+                        }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun NumericSelector(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    label: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+            .padding(12.dp)
+    ) {
+        IconButton(
+            onClick = { onValueChange(value - 1) },
+            modifier = Modifier.background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
+        ) {
+            Icon(Icons.Default.Remove, "Menos", tint = MaterialTheme.colorScheme.primary)
+        }
+        
+        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = value.toString(),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        IconButton(
+            onClick = { onValueChange(value + 1) },
+            modifier = Modifier.background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
+        ) {
+            Icon(Icons.Default.Add, "Más", tint = MaterialTheme.colorScheme.primary)
         }
     }
 }

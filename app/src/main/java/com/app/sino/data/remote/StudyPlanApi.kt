@@ -61,4 +61,7 @@ interface StudyPlanApi {
         @Query("userId") userId: Int,
         @Query("planId") planId: Int
     ): Response<ApiResponse<Void>>
+
+    @POST("api/student-courses/recalculate/{userId}")
+    suspend fun recalculateAllStatuses(@Path("userId") userId: Int): Response<ApiResponse<Void>>
 }

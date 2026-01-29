@@ -11,43 +11,47 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+
 private val DarkColorScheme = darkColorScheme(
-    primary = SinoWhite,
+    primary = SinoPrimary,
     onPrimary = SinoBlack,
-    secondary = SinoMediumGrey,
-    onSecondary = SinoWhite,
-    tertiary = SinoLightGrey,
+    secondary = SinoPrimaryLight,
+    onSecondary = SinoBlack,
+    tertiary = SinoSurfaceVariant,
     background = SinoBackground,
-    onBackground = SinoWhite,
-    surface = SinoBlack,
-    onSurface = SinoWhite,
-    onSurfaceVariant = SinoLightGrey
+    onBackground = SinoTextPrimary,
+    surface = SinoSurface,
+    onSurface = SinoTextPrimary,
+    surfaceVariant = SinoSurfaceVariant,
+    onSurfaceVariant = SinoTextSecondary,
+    outline = GlassBorder
 )
 
+// Minimalist Apple Light Scheme (keeping it just in case, but favoring Dark)
 private val LightColorScheme = lightColorScheme(
-    primary = SinoBlack,
+    primary = SinoPrimaryDark,
     onPrimary = SinoWhite,
-    secondary = SinoMediumGrey,
+    secondary = SinoPrimary,
     onSecondary = SinoWhite,
-    tertiary = SinoLightGrey,
-    background = SinoWhite,
-    onBackground = SinoBlack,
-    surface = SinoWhite,
-    onSurface = SinoBlack,
-    onSurfaceVariant = SinoMediumGrey
+    tertiary = SinoSurface,
+    background = Color(0xFFF2F2F7), // Apple System Gray 6
+    onBackground = Color(0xFF1C1C1E),
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF1C1C1E),
+    surfaceVariant = Color(0xFFE5E5EA),
+    onSurfaceVariant = Color(0xFF3A3A3C),
+    outline = Color(0xFFD1D1D6)
 )
 
 @Composable
 fun SINOTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Disabled for strictly B&W
+    darkTheme: Boolean = true, // Force dark theme by default for that 'Premium' feel
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        // dynamicColor check removed to force our theme
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

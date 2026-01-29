@@ -134,6 +134,19 @@ class StudyPlanRepository(private val tokenManager: TokenManager? = null) {
         }
     }
 
+    suspend fun getUserByEmail(email: String): Resource<UserDto> {
+        return try {
+            val response = RetrofitClient.userApi.getUserByEmail(email)
+            if (response.isSuccessful && response.body()?.data != null) {
+                Resource.Success(response.body()!!.data!!)
+            } else {
+                Resource.Error("User not found")
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error fetching user")
+        }
+    }
+
     suspend fun updateCourse(course: CourseDto): Resource<CourseDto> {
         return try {
             val response = api.updateCourse(course.idCourse ?: return Resource.Error("Course ID is missing"), course)
@@ -183,6 +196,19 @@ class StudyPlanRepository(private val tokenManager: TokenManager? = null) {
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Error initializing plan")
+        }
+    }
+
+    suspend fun recalculateAllStatuses(userId: Int): Resource<Boolean> {
+        return try {
+            val response = api.recalculateAllStatuses(userId)
+            if (response.isSuccessful && response.body()?.success == true) {
+                Resource.Success(true)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Error recalculating statuses")
         }
     }
 }

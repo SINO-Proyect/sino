@@ -2,50 +2,31 @@ package com.app.sino.ui.components
 
 import android.graphics.Bitmap
 import android.graphics.Color as AndroidColor
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
-import com.app.sino.ui.theme.Dimens
-import com.app.sino.ui.theme.GradientBlackEnd
-import com.app.sino.ui.theme.GradientBlackStart
-import com.app.sino.ui.theme.SinoBlack
-import com.app.sino.ui.theme.SinoWhite
+import androidx.compose.ui.unit.dp
 import java.util.Random
 
 @Composable
 fun SinoScreenWrapper(
-    backgroundImageRes: Int,
+    backgroundImageRes: Int? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(SinoBlack)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Image(
-            painter = painterResource(id = backgroundImageRes),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .grainEffect()
-                .blur(Dimens.BlurRadius),
-            contentScale = ContentScale.Crop
-        )
         content()
     }
 }
@@ -59,13 +40,8 @@ fun SinoBottomCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        GradientBlackStart,
-                        GradientBlackEnd
-                    )
-                ),
-                shape = RoundedCornerShape(topStart = Dimens.BottomCardCornerRadius, topEnd = Dimens.BottomCardCornerRadius)
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
             )
     ) {
         content()

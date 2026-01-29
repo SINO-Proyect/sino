@@ -41,8 +41,7 @@ import com.app.sino.ui.components.SinoButton
 import com.app.sino.ui.components.SinoScreenWrapper
 import com.app.sino.ui.components.SinoTextField
 import com.app.sino.ui.theme.Dimens
-import com.app.sino.ui.theme.SinoBlack
-import com.app.sino.ui.theme.SinoWhite
+import com.app.sino.ui.theme.SinoPrimary
 import kotlinx.coroutines.delay
 
 @Composable
@@ -91,136 +90,104 @@ fun LoginScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color.Transparent
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        SinoScreenWrapper(backgroundImageRes = R.drawable.bg6) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(24.dp)
+        ) {
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Text(
+                text = "Bienvenido",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = "Inicia sesión para continuar con tu progreso.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            SinoTextField(
+                label = "Correo Electrónico",
+                value = email,
+                onValueChange = { 
+                    email = it
+                    viewModel.clearLoginErrors()
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                placeholder = "tu@email.com",
+                isError = loginFormState.emailError != null,
+                errorMessage = loginFormState.emailError
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            SinoTextField(
+                label = "Contraseña",
+                value = password,
+                onValueChange = { 
+                    password = it
+                    viewModel.clearLoginErrors()
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { viewModel.login(email, password) }
+                ),
+                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIconRes = if (isPasswordVisible) R.drawable.eye_bold else R.drawable.eye_closed_bold,
+                onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
+                placeholder = "••••••••",
+                isError = loginFormState.passwordError != null,
+                errorMessage = loginFormState.passwordError
+            )
+
+            TextButton(
+                onClick = onForgotPasswordClick,
+                modifier = Modifier.align(Alignment.End)
             ) {
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = Dimens.HeaderTopPadding, bottom = Dimens.HeaderBottomPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Welcome Back",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = SinoBlack
-                    )
-                }
-
-
-                SinoBottomCard(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = Dimens.PaddingExtraLarge, vertical = Dimens.PaddingHuge),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        
-
-                        SinoTextField(
-                            label = "Email Address",
-                            value = email,
-                            onValueChange = { 
-                                email = it
-                                viewModel.clearLoginErrors()
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Email,
-                                imeAction = ImeAction.Next
-                            ),
-                            placeholder = "example@email.com",
-                            isError = loginFormState.emailError != null,
-                            errorMessage = loginFormState.emailError
-                        )
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-
-                        SinoTextField(
-                            label = "Password",
-                            value = password,
-                            onValueChange = { 
-                                password = it
-                                viewModel.clearLoginErrors()
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = { viewModel.login(email, password) }
-                            ),
-                            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            trailingIconRes = if (isPasswordVisible) R.drawable.eye_bold else R.drawable.eye_closed_bold,
-                            onTrailingIconClick = { isPasswordVisible = !isPasswordVisible },
-                            placeholder = "••••••••",
-                            isError = loginFormState.passwordError != null,
-                            errorMessage = loginFormState.passwordError
-                        )
-
-                        Spacer(modifier = Modifier.height(Dimens.PaddingSmall))
-
-                        TextButton(
-                            onClick = onForgotPasswordClick,
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text(
-                                text = "Forgot your password?",
-                                color = SinoWhite.copy(alpha = 0.7f),
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
-                        
-
-                        if (apiError != null) {
-                            Text(
-                                text = apiError!!,
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        val isLoginEnabled = viewModel.isLoginValid(email, password)
-
-                        if (authState is Resource.Loading) {
-    
-                            SinoButton(
-                                text = "Logging in...",
-                                onClick = { },
-                                containerColor = SinoWhite,
-                                contentColor = SinoBlack,
-                                enabled = false
-                            )
-                        } else {
-                            SinoButton(
-                                text = "Log In",
-                                onClick = { viewModel.login(email, password) },
-                                containerColor = if (isLoginEnabled) SinoWhite else Color.DarkGray.copy(alpha = 0.15f),
-                                contentColor = if (isLoginEnabled) SinoBlack else Color.Gray.copy(alpha = 0.5f),
-                                enabled = isLoginEnabled
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.height(Dimens.PaddingExtraLarge)) 
-                    }
-                }
+                Text(
+                    text = "¿Olvidaste tu contraseña?",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = SinoPrimary,
+                    fontWeight = FontWeight.Bold
+                )
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (apiError != null) {
+                Text(
+                    text = apiError!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                )
+            }
+
+            val isLoginEnabled = viewModel.isLoginValid(email, password)
+
+            SinoButton(
+                text = if (authState is Resource.Loading) "Iniciando..." else "Iniciar Sesión",
+                onClick = { viewModel.login(email, password) },
+                enabled = isLoginEnabled && authState !is Resource.Loading
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
